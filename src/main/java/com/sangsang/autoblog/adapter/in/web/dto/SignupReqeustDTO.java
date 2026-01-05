@@ -14,6 +14,6 @@ public class SignupReqeustDTO {
     private boolean agreeToTerms;
 
     public User toUserDomain() {
-        return new User(email, password, extraInfo, nickname, agreeToTerms);
+        return User.signupWithOrigin(nickname, password, email, extraInfo, agreeToTerms);
     }
 }

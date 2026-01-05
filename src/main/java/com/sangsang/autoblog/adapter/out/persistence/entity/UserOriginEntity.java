@@ -2,6 +2,8 @@ package com.sangsang.autoblog.adapter.out.persistence.entity;
 
 import java.time.LocalDateTime;
 
+import com.sangsang.autoblog.domain.model.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,5 +52,23 @@ public class UserOriginEntity {
         this.email = email;
         this.createdAt = LocalDateTime.now();
         this.status = "ACTIVE";
+    }
+
+    public static UserOriginEntity fromDomain(User user) {
+        return new UserOriginEntity(
+            user.userName,
+            user.password,
+            user.email
+        );
+    }
+
+    public static User toDomain(UserOriginEntity entity) {
+        return User.signupWithOrigin(
+            entity.getUserName(),
+            entity.getPassword(),
+            entity.getEmail(),
+            null,
+            true
+        );
     }
 }

@@ -1,6 +1,6 @@
 package com.sangsang.autoblog.adapter.in.web.dto;
 
-import com.sangsang.autoblog.domain.model.Signin;
+import com.sangsang.autoblog.domain.model.User;
 
 import lombok.Setter;
 
@@ -11,8 +11,8 @@ public class SigninReqeustDTO {
     private String password;
     private boolean rememberMe;
 
-    public Signin toSigninDomain() {
-        return new Signin(userId, password, rememberMe);
+    public User toSigninDomain() {
+        return User.signinWithOrigin(userId, password, rememberMe);
     }
 
 }

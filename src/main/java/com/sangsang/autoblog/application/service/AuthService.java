@@ -2,7 +2,6 @@ package com.sangsang.autoblog.application.service;
 
 import org.springframework.stereotype.Service;
 
-import com.sangsang.autoblog.domain.model.Signin;
 import com.sangsang.autoblog.domain.model.User;
 
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
@@ -28,7 +27,7 @@ public class AuthService implements AuthUseCase{
     }
 
     @Override
-    public User signin(Signin signinInfo) {
+    public User signin(User signinInfo) {
         // TODO : 인증 로직 구현
         return null;
     }
@@ -42,7 +41,6 @@ public class AuthService implements AuthUseCase{
             throw new IllegalArgumentException("User already exists");
         }
 
-        User createdUser = userOriginRepositoryPort.save(newUser);
-        return createdUser;
+        return userOriginRepositoryPort.save(newUser);
     }
 }
