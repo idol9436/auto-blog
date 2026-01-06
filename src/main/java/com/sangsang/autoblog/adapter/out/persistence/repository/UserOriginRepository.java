@@ -6,4 +6,6 @@ import com.sangsang.autoblog.adapter.out.persistence.entity.UserOriginEntity;
 public interface UserOriginRepository extends JpaRepository<UserOriginEntity, Long> {
 
     public UserOriginEntity findByUserName(String userName);
+    public UserOriginEntity findByUserNameAndPassword(String userName, String password);
+    
 } 

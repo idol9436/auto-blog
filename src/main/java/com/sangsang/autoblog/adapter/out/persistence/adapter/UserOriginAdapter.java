@@ -32,4 +32,13 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
          }
         return null;
     }
+
+    @Override
+    public User findByUserNameAndPassword(String userName, String password) {
+        UserOriginEntity userEntity = userOriginRepository.findByUserNameAndPassword(userName, password);
+        if (userEntity != null) {
+            return UserOriginEntity.toDomain(userEntity);
+        }
+       return null;
+    }
 }

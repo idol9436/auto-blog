@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sangsang.autoblog.adapter.in.web.dto.SigninReqeustDTO;
 import com.sangsang.autoblog.adapter.in.web.dto.SignupReqeustDTO;
-
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
 
 @Controller
@@ -39,6 +38,7 @@ public class AuthController {
     @PostMapping("/signup")
     public String postSignup(SignupReqeustDTO signupReqeustDTO) {
         authUseCase.signup(signupReqeustDTO.toUserDomain());
+
         return "redirect:signin";
     }
     

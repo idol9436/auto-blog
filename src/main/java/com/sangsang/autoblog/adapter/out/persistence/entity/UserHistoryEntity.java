@@ -26,7 +26,7 @@ public class UserHistoryEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "origin_user_id", nullable = false)
     private UserOriginEntity user;
 
     @Column(name = "action", nullable = false)
