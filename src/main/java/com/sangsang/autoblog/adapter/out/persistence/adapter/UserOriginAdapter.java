@@ -25,17 +25,18 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
     }
 
     @Override
-    public User findByUserName(String userName) {
-         UserOriginEntity userEntity = userOriginRepository.findByUserName(userName);
-         if (userEntity != null) {
-             return UserOriginEntity.toDomain(userEntity);
-         }
-        return null;
+    public boolean existsByUsername(String username) {
+        return userOriginRepository.existsByUsername(username);
     }
 
     @Override
-    public User findByUserNameAndPassword(String userName, String password) {
-        UserOriginEntity userEntity = userOriginRepository.findByUserNameAndPassword(userName, password);
+    public boolean existsByEmail(String email) {
+        return userOriginRepository.existsByEmail(email);
+    }
+    
+    @Override
+    public User findByUsernameAndPassword(String username, String password) {
+        UserOriginEntity userEntity = userOriginRepository.findByUsernameAndPassword(username, password);
         if (userEntity != null) {
             return UserOriginEntity.toDomain(userEntity);
         }

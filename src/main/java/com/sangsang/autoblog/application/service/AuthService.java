@@ -1,8 +1,9 @@
 package com.sangsang.autoblog.application.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.sangsang.autoblog.domain.exception.DuplicateEmailException;
+import com.sangsang.autoblog.domain.exception.DuplicateException;
 import com.sangsang.autoblog.domain.model.User;
 
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
@@ -30,8 +31,8 @@ public class AuthService implements AuthUseCase{
     @Override
     public User signin(User signinInfo) {
         // TODO : 인증로직 구제화
-        User foundUser = userOriginRepositoryPort.findByUserNameAndPassword(
-            signinInfo.userName,
+        User foundUser = userOriginRepositoryPort.findByUsernameAndPassword(
+            signinInfo.username,
             signinInfo.password
         );
         if(foundUser == null) {
@@ -43,20 +44,22 @@ public class AuthService implements AuthUseCase{
     @Override
     public User signup(User newUser) {
 
-        try {
-            // TODO : 예외처리 구체화
-            User exsistUser = userOriginRepositoryPort.findByUserName(newUser.userName);
-            if(exsistUser != null) {
-                throw new IllegalArgumentException("User already exists");
-            }
+        if(userOriginRepositoryPort.existsByUsername(newUser.username)){
+            throw new IllegalArgumentException("Username already exists");
+        }
 
-        } catch (DuplicateEmailException e) {
-            // TODO: handle exception
-            throw new DuplicateEmailException("Duplicate email found during signup");
+        if(userOriginRepositoryPort.existsByEmail(newUser.email)){
+            throw new IllegalArgumentException("Email already exists");
+        }
+        
+        try {
+            return userOriginRepositoryPort.save(newUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Duplicate info found during signup");
         } catch (Exception e) {
             // TODO: handle exception
         }
 
-        return userOriginRepositoryPort.save(newUser);
+        return null;
     }
 }

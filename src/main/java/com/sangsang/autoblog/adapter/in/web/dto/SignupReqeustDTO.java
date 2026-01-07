@@ -10,10 +10,10 @@ public class SignupReqeustDTO {
     private String email;
     private String password;
     private String extraInfo;
-    private String nickname;
+    private String userId;
     private boolean agreeToTerms;
 
     public User toUserDomain() {
-        return User.signupWithOrigin(nickname, password, email, extraInfo, agreeToTerms);
+        return User.signupWithOrigin(userId, password, email, extraInfo, agreeToTerms);
     }
 }

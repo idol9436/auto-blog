@@ -2,7 +2,7 @@ package com.sangsang.autoblog.domain.model;
 
 public class User {
     
-    public final String userName;
+    public final String username;
     public final String password;
     public final String email;
     public final String provider;
@@ -11,7 +11,7 @@ public class User {
     public final boolean rememberMe;
     public final boolean agreeToTerms;
 
-    private User(String userName,
+    private User(String username,
                  String password, 
                  String email, 
                  String provider,
@@ -20,7 +20,7 @@ public class User {
                  boolean rememberMe, 
                  boolean agreeToTerms) {
         
-        this.userName = userName;
+        this.username = username;
         this.password = password;
         this.provider = provider;
         this.providerId = providerId;
@@ -30,15 +30,15 @@ public class User {
         this.extraInfo = extraInfo;
     }
 
-    public static User signupWithOrigin(String userName, String password, String email, String extraInfo, boolean agreeToTerms) {
-        return new User(userName, password, email, null, null, extraInfo, false, agreeToTerms);
+    public static User signupWithOrigin(String username, String password, String email, String extraInfo, boolean agreeToTerms) {
+        return new User(username, password, email, null, null, extraInfo, false, agreeToTerms);
     }
 
     public static User signupWithOAuth(String provider, String providerId, String email, String extraInfo, boolean agreeToTerms) {
         return new User(null, null, email, provider, providerId, extraInfo, false, agreeToTerms);
     }
 
-    public static User signinWithOrigin(String userName, String password, boolean rememberMe) {
-        return new User(userName, password, null, null, null, null, rememberMe, false);
+    public static User signinWithOrigin(String username, String password, boolean rememberMe) {
+        return new User(username, password, null, null, null, null, rememberMe, false);
     }
 }

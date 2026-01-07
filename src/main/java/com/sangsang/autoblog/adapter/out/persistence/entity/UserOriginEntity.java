@@ -25,8 +25,8 @@ public class UserOriginEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_name", nullable = false, unique = true)
-    private String userName;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -46,8 +46,8 @@ public class UserOriginEntity {
     @Column(name = "status")
     private String status;
 
-    public UserOriginEntity(String userName, String password, String email) {
-        this.userName = userName;
+    public UserOriginEntity(String username, String password, String email) {
+        this.username = username;
         this.password = password;
         this.email = email;
         this.createdAt = LocalDateTime.now();
@@ -56,7 +56,7 @@ public class UserOriginEntity {
 
     public static UserOriginEntity fromDomain(User user) {
         return new UserOriginEntity(
-            user.userName,
+            user.username,
             user.password,
             user.email
         );
@@ -64,7 +64,7 @@ public class UserOriginEntity {
 
     public static User toDomain(UserOriginEntity entity) {
         return User.signupWithOrigin(
-            entity.getUserName(),
+            entity.getUsername(),
             entity.getPassword(),
             entity.getEmail(),
             null,
