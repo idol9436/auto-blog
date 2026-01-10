@@ -12,7 +12,7 @@ public class User {
     public final boolean agreeToTerms;
 
     private User(String username,
-                 String password, 
+                 String password,
                  String email, 
                  String provider,
                  String providerId,

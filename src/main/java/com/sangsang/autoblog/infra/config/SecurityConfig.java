@@ -15,18 +15,23 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // static 자원에 대한 접근 모두 허용
-                .requestMatchers("/src/**").permitAll()
-                .requestMatchers("/", "/home", "/healthCheck", "/auth/**").permitAll()
+                .requestMatchers("/", "/home", "/healthCheck").permitAll()
+                .requestMatchers("/auth/signup").permitAll()
                 .requestMatchers("/content/preview").permitAll()
                 // .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 // .anyRequest().permitAll()
-            )
-            .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+            );
+            // .formLogin((form) -> form
+            //         .loginPage("/login")
+            //         .loginProcessingUrl("/login")
+            //         .permitAll());
+
 
         return http.build();
     }

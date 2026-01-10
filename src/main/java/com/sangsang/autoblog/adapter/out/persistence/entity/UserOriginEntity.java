@@ -31,6 +31,9 @@ public class UserOriginEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "role")
+    private String role;
+
     @Column(name = "email", unique = true)
     private String email;
 
@@ -52,6 +55,7 @@ public class UserOriginEntity {
         this.email = email;
         this.createdAt = LocalDateTime.now();
         this.status = "ACTIVE";
+        this.role = "ROLE_USER";
     }
 
     public static UserOriginEntity fromDomain(User user) {
