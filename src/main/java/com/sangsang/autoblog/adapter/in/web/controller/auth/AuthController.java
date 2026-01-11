@@ -24,11 +24,11 @@ public class AuthController {
         return "pages/auth/signin";
     }
 
-    @PostMapping("/signin")
-    public String postSignin(SigninReqeustDTO signinReqeustDTO) {
-        authUseCase.signin(signinReqeustDTO.toSigninDomain());
-        return "redirect:/home";
-    }
+    // @PostMapping("/signin")
+    // public String postSignin(SigninReqeustDTO signinReqeustDTO) {
+    //     authUseCase.signin(signinReqeustDTO.toSigninDomain());
+    //     return "redirect:/home";
+    // }
 
     @GetMapping("/signup")
     public String getSignupView() {
@@ -37,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String postSignup(SignupReqeustDTO signupReqeustDTO) {
-        authUseCase.signup(signupReqeustDTO.toUserDomain());
+        authUseCase.signup(signupReqeustDTO.toSignUpCommand());
 
         return "redirect:signin";
     }

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -21,18 +22,26 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // static 자원에 대한 접근 모두 허용
                 .requestMatchers("/", "/home", "/healthCheck").permitAll()
-                .requestMatchers("/auth/signup").permitAll()
+                .requestMatchers("/auth/signup", "/auth/signin").permitAll()
                 .requestMatchers("/content/preview").permitAll()
                 // .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 // .anyRequest().permitAll()
-            );
-            // .formLogin((form) -> form
-            //         .loginPage("/login")
-            //         .loginProcessingUrl("/login")
-            //         .permitAll());
+            )
+            .formLogin((form) -> form
+                .loginPage("/auth/sginin")
+                .loginProcessingUrl("/auth/signin")
+                .usernameParameter("userId")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/home")
+                .permitAll());
 
 
         return http.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

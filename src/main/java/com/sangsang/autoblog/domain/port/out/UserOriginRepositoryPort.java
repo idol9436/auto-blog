@@ -1,5 +1,7 @@
 package com.sangsang.autoblog.domain.port.out;
 
+import java.util.Optional;
+
 import com.sangsang.autoblog.domain.model.User;
 
 public interface UserOriginRepositoryPort{
@@ -10,5 +12,6 @@ public interface UserOriginRepositoryPort{
     User save(User user);
 
     //signin
-    User findByUsernameAndPassword(String username, String password);
+    User findByUsernameAndPassword(String username, String passowrd);
+    Optional<User> findByUsername(String username);
 }

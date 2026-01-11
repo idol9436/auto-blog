@@ -1,5 +1,7 @@
 package com.sangsang.autoblog.adapter.out.persistence.adapter;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.sangsang.autoblog.adapter.out.persistence.entity.UserOriginEntity;
@@ -41,5 +43,13 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
             return UserOriginEntity.toDomain(userEntity);
         }
        return null;
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        UserOriginEntity userEntity = userOriginRepository.findByUsername(username);
+        Optional<User> optUser = Optional.of(UserOriginEntity.toDomain(userEntity));
+        System.out.println("Adapter");
+        return optUser;
     }
 }

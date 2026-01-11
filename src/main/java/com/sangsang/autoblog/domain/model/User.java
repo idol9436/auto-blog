@@ -4,6 +4,7 @@ public class User {
     
     public final String username;
     public final String password;
+    public final String role;
     public final String email;
     public final String provider;
     public final String providerId;
@@ -13,6 +14,7 @@ public class User {
 
     private User(String username,
                  String password,
+                 String role,
                  String email, 
                  String provider,
                  String providerId,
@@ -22,6 +24,7 @@ public class User {
         
         this.username = username;
         this.password = password;
+        this.role = role;
         this.provider = provider;
         this.providerId = providerId;
         this.email = email;
@@ -31,14 +34,14 @@ public class User {
     }
 
     public static User signupWithOrigin(String username, String password, String email, String extraInfo, boolean agreeToTerms) {
-        return new User(username, password, email, null, null, extraInfo, false, agreeToTerms);
+        return new User(username, password, "ROLE_USER", email, null, null, extraInfo, false, agreeToTerms);
     }
 
     public static User signupWithOAuth(String provider, String providerId, String email, String extraInfo, boolean agreeToTerms) {
-        return new User(null, null, email, provider, providerId, extraInfo, false, agreeToTerms);
+        return new User(null, null,  "ROLE_USER", email, provider, providerId, extraInfo, false, agreeToTerms);
     }
 
     public static User signinWithOrigin(String username, String password, boolean rememberMe) {
-        return new User(username, password, null, null, null, null, rememberMe, false);
+        return new User(username,  "ROLE_USER", password, null, null, null, null, rememberMe, false);
     }
 }
