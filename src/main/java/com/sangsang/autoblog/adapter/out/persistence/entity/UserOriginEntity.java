@@ -49,30 +49,35 @@ public class UserOriginEntity {
     @Column(name = "status")
     private String status;
 
-    public UserOriginEntity(String username, String password, String email) {
+    private UserOriginEntity(String username, String password, String email, String role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.createdAt = LocalDateTime.now();
         this.status = "ACTIVE";
-        this.role = "ROLE_USER";
+        this.role = role;
     }
 
     public static UserOriginEntity fromDomain(User user) {
         return new UserOriginEntity(
             user.username,
             user.password,
-            user.email
+            user.email,
+            user.role
         );
     }
 
-    public static User toDomain(UserOriginEntity entity) {
-        return User.signupWithOrigin(
-            entity.getUsername(),
-            entity.getPassword(),
-            entity.getEmail(),
+    public User toOriginUserDomain() {
+        return User.restore(
+            this.username,
+            this.password,
+            this.role,
+            this.email,
             null,
-            true
+            null,
+            null,
+            false,
+            false
         );
     }
 }

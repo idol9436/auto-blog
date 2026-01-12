@@ -17,16 +17,15 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // h2-console의 iframe 허용
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll() // h2-console 로그인 경로 허용
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // static 자원에 대한 접근 모두 허용
                 .requestMatchers("/", "/home", "/healthCheck").permitAll()
                 .requestMatchers("/auth/signup", "/auth/signin").permitAll()
                 .requestMatchers("/content/preview").permitAll()
                 // .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
-                // .anyRequest().permitAll()
             )
             .formLogin((form) -> form
                 .loginPage("/auth/sginin")

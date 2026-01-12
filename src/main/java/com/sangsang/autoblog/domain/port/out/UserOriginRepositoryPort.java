@@ -12,6 +12,5 @@ public interface UserOriginRepositoryPort{
     User save(User user);
 
     //signin
-    User findByUsernameAndPassword(String username, String passowrd);
     Optional<User> findByUsername(String username);
 }

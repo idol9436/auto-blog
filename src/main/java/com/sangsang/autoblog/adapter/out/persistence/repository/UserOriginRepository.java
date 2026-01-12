@@ -5,7 +5,6 @@ import com.sangsang.autoblog.adapter.out.persistence.entity.UserOriginEntity;
 
 public interface UserOriginRepository extends JpaRepository<UserOriginEntity, Long> {
 
-    public UserOriginEntity findByUsernameAndPassword(String username, String password);
     public UserOriginEntity findByUsername(String username);
 
     public boolean existsByEmail(String email);

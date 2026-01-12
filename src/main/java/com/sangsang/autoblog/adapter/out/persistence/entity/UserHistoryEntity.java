@@ -41,4 +41,5 @@ public class UserHistoryEntity {
         this.actionAt = LocalDateTime.now();
     }
 
+    // TODO public static UserHistoryEntity fromDomain(User user){}
 }

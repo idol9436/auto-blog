@@ -20,10 +20,8 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
 
     @Override
     public User save(User user) {
-        UserOriginEntity userEntity = UserOriginEntity.fromDomain(user);
-
-        UserOriginEntity savedEntity = userOriginRepository.save(userEntity);
-        return UserOriginEntity.toDomain(savedEntity);
+        UserOriginEntity savedEntity = userOriginRepository.save(UserOriginEntity.fromDomain(user));
+        return savedEntity.toOriginUserDomain();
     }
 
     @Override
@@ -35,20 +33,11 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
     public boolean existsByEmail(String email) {
         return userOriginRepository.existsByEmail(email);
     }
-    
-    @Override
-    public User findByUsernameAndPassword(String username, String password) {
-        UserOriginEntity userEntity = userOriginRepository.findByUsernameAndPassword(username, password);
-        if (userEntity != null) {
-            return UserOriginEntity.toDomain(userEntity);
-        }
-       return null;
-    }
 
     @Override
     public Optional<User> findByUsername(String username) {
         UserOriginEntity userEntity = userOriginRepository.findByUsername(username);
-        Optional<User> optUser = Optional.of(UserOriginEntity.toDomain(userEntity));
+        Optional<User> optUser = Optional.of(userEntity.toOriginUserDomain());
         System.out.println("Adapter");
         return optUser;
     }

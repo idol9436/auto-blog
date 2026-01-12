@@ -19,7 +19,10 @@ import com.sangsang.autoblog.domain.port.out.UserHistoryRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOAuthRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOriginRepositoryPort;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class AuthService implements AuthUseCase, UserDetailsService{
 
     private final BCryptPasswordEncoder passwordEncoder;
@@ -28,34 +31,22 @@ public class AuthService implements AuthUseCase, UserDetailsService{
     private final UserOriginRepositoryPort userOriginRepositoryPort;
     private final UserOAuthRepositoryPort userOAuthRepositoryPort;
 
-    public AuthService(
-        UserHistoryRepositoryPort userRepositoryPort,
-        UserOriginRepositoryPort userOriginRepositoryPort,
-        UserOAuthRepositoryPort userOAuthRepositoryPort
-    , BCryptPasswordEncoder passwordEncoder) {
-        this.userRepositoryPort = userRepositoryPort;
-        this.userOriginRepositoryPort = userOriginRepositoryPort;
-        this.userOAuthRepositoryPort = userOAuthRepositoryPort;
-        this.passwordEncoder = passwordEncoder;
+    public AuthService(UserHistoryRepositoryPort userRepositoryPort,
+                        UserOriginRepositoryPort userOriginRepositoryPort,
+                        UserOAuthRepositoryPort userOAuthRepositoryPort,
+                        BCryptPasswordEncoder passwordEncoder) {
+            this.userRepositoryPort = userRepositoryPort;
+            this.userOriginRepositoryPort = userOriginRepositoryPort;
+            this.userOAuthRepositoryPort = userOAuthRepositoryPort;
+            this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public User signin(User signinInfo) {
-        // // Native logic
-        // User foundUser = userOriginRepositoryPort.findByUsernameAndPassword(
-        //     signinInfo.username,
-        //     signinInfo.password
-        // );
-        // if(foundUser == null) {
-        //     throw new IllegalArgumentException("Invalid username or password");
-        // }
-        // return foundUser;
-        return null;
-    }
-
+    /*
+     * Override for UserDetailsService : Srping security
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("username at loadUserByUsername : " + username);
+
         Optional<User> optUser = userOriginRepositoryPort.findByUsername(username);
 
         if(optUser.isPresent()){
@@ -67,16 +58,17 @@ public class AuthService implements AuthUseCase, UserDetailsService{
     @Override
     public User signup(SignupCommand cmd) {
 
-        if(userOriginRepositoryPort.existsByUsername(cmd.username)){
+        if(userOriginRepositoryPort.existsByUsername(cmd.username())){
             throw new IllegalArgumentException("Username already exists");
         }
 
-        if(userOriginRepositoryPort.existsByEmail(cmd.email)){
+        if(userOriginRepositoryPort.existsByEmail(cmd.email())){
             throw new IllegalArgumentException("Email already exists");
         }
         
         try {
-            User newUser = User.signupWithOrigin(cmd.username, passwordEncoder.encode(cmd.password), cmd.email, cmd.extraInfo, cmd.agreeToTerms);
+            User newUser = User.signupOriginFrom(cmd);
+            newUser.changePassword(passwordEncoder.encode(newUser.password));
             return userOriginRepositoryPort.save(newUser);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Duplicate info found during signup");

@@ -51,4 +51,6 @@ public class UserOAuthEntity {
         this.createdAt = LocalDateTime.now();
     }   
 
+    // TODO public static UserOAuthEntity fromDomain(User user){}
+    // TODO public User toDomain(){}
 }

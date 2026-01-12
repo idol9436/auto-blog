@@ -1,24 +1,25 @@
 package com.sangsang.autoblog.adapter.in.web.dto;
 
 import com.sangsang.autoblog.application.command.SignupCommand;
-import com.sangsang.autoblog.domain.model.User;
 
-import lombok.Setter;
-
-@Setter
-public class SignupReqeustDTO {
-
-    private String email;
-    private String password;
-    private String extraInfo;
-    private String userId;
-    private boolean agreeToTerms;
-
-    public User toUserDomain() {
-        return User.signupWithOrigin(userId, password, email, extraInfo, agreeToTerms);
-    }
-
-    public SignupCommand toSignUpCommand() {
-        return new SignupCommand(userId, password, email, extraInfo, agreeToTerms);
+public record SignupReqeustDTO(
+    String email,
+    String password,
+    String extraInfo,
+    String userId,
+    boolean agreeToTerms,
+    String provider,
+    String providerId
+) {
+    public SignupCommand toCommand() {
+        return new SignupCommand(
+            userId,
+            password,
+            email,
+            extraInfo,
+            agreeToTerms,
+            provider,
+            providerId
+        );
     }
 }
