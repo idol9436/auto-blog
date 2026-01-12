@@ -1,18 +1,25 @@
 package com.sangsang.autoblog.domain.model;
 
+import com.sangsang.autoblog.application.command.SignupCommand;
+
 public class User {
     
-    public final String userName;
-    public final String password;
+    public final String username;
+    public String password;
+    public final String role;
     public final String email;
-    public final String provider;
-    public final String providerId;
+    public String provider;
+    public String providerId;
     public final String extraInfo;    
     public final boolean rememberMe;
     public final boolean agreeToTerms;
 
-    private User(String userName,
-                 String password, 
+    enum Role { ROLE_USER }
+    enum AuthProvider { GOOGLE, KAKAO }
+
+    private User(String username,
+                 String password,
+                 String role,
                  String email, 
                  String provider,
                  String providerId,
@@ -20,8 +27,9 @@ public class User {
                  boolean rememberMe, 
                  boolean agreeToTerms) {
         
-        this.userName = userName;
+        this.username = username;
         this.password = password;
+        this.role = role;
         this.provider = provider;
         this.providerId = providerId;
         this.email = email;
@@ -30,15 +38,58 @@ public class User {
         this.extraInfo = extraInfo;
     }
 
-    public static User signupWithOrigin(String userName, String password, String email, String extraInfo, boolean agreeToTerms) {
-        return new User(userName, password, email, null, null, extraInfo, false, agreeToTerms);
+    public static User restore(
+        String username,
+        String password,
+        String role,
+        String email, 
+        String provider,
+        String providerId,
+        String extraInfo, 
+        boolean rememberMe, 
+        boolean agreeToTerms
+    ) {
+        return new User(
+            username,
+            password,
+            role,
+            provider,
+            providerId,
+            email,       
+            extraInfo,
+            rememberMe,  
+            agreeToTerms
+        );
     }
 
-    public static User signupWithOAuth(String provider, String providerId, String email, String extraInfo, boolean agreeToTerms) {
-        return new User(null, null, email, provider, providerId, extraInfo, false, agreeToTerms);
+    public static User signupOriginFrom(SignupCommand cmd) {
+        return new User(cmd.username(),
+                        cmd.password(),
+                        Role.ROLE_USER.name(),
+                        cmd.email(),
+                        null,
+                        null, 
+                        cmd.extraInfo(), 
+                        false, 
+                        cmd.agreeToTerms());
     }
 
-    public static User signinWithOrigin(String userName, String password, boolean rememberMe) {
-        return new User(userName, password, null, null, null, null, rememberMe, false);
+    public static User signupOAuthFrom(SignupCommand cmd) {
+        return new User(null, 
+                        null, 
+                        Role.ROLE_USER.name(), 
+                        cmd.email(), 
+                        cmd.provider(), 
+                        cmd.providerId(), 
+                        cmd.extraInfo(), 
+                        false, 
+                        cmd.agreeToTerms());
+    }
+
+    public void changePassword(String encodedPassword) {
+        if (provider != null) {
+            throw new IllegalStateException("OAuth user");
+        }
+        this.password = encodedPassword;
     }
 }

@@ -1,0 +1,43 @@
+회원가입 :
+    네이티브
+        이메일 필수 + 이메일폼 + 중복체크 버튼
+        username 필수 + 글자제한 + 중복체크 버튼
+        비밀번호 필수 + 형식제한 + 재입력체크
+        임시변수 : 셀렉트
+        약관동의 필수
+            user_origin에 해당정보 저장
+                로그인페이지 이동
+            저장시 오류
+                중복체크 버튼 check 되어야 저장가능
+                그럼에도 오류시 오류 메세지 안내
+    소셜로그인
+        버튼만있음
+            provider+provider_id로 user_origin_id FK조회
+                있으면 그 user_origin_id로 로그인
+                    성공시 홈
+                없으면 추가정보 입력 페이지 이동
+                    이메일 입력 필수 + 중복체크
+                    약관동의 필수
+                    username = provider_id
+                    비밀번호 null
+                        user_origin 생성
+                            성공시 홈
+                        실패시 오류메세지
+
+로그인(Authentication)
+    네이티브 username + 비밀번호
+        성공시 홈
+        실패시 메세지
+    소셜로그인
+        provider+provider_id로 user_origin_id FK조회
+            있으면 그 user_origin_id로 로그인
+                성공시 홈
+            없으면 회원가입 페이지 이동
+
+인가(Authorization)
+    1.홈 : any
+    2.preview(btn) : any
+    3.signin/signup : any
+    4.prompt(btn) :  유저 + 관리자
+    5.api 허가 요청 : 유저 + 관리자
+    6.api 허가 관리 : only 관리자

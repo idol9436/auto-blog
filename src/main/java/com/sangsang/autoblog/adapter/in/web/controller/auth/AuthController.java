@@ -5,9 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.sangsang.autoblog.adapter.in.web.dto.SigninReqeustDTO;
 import com.sangsang.autoblog.adapter.in.web.dto.SignupReqeustDTO;
-
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
 
 @Controller
@@ -25,12 +23,6 @@ public class AuthController {
         return "pages/auth/signin";
     }
 
-    @PostMapping("/signin")
-    public String postSignin(SigninReqeustDTO signinReqeustDTO) {
-        authUseCase.signin(signinReqeustDTO.toSigninDomain());
-        return "redirect:/home";
-    }
-
     @GetMapping("/signup")
     public String getSignupView() {
         return "pages/auth/signup";
@@ -38,7 +30,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String postSignup(SignupReqeustDTO signupReqeustDTO) {
-        authUseCase.signup(signupReqeustDTO.toUserDomain());
+        authUseCase.signup(signupReqeustDTO.toCommand());
+
         return "redirect:signin";
     }
     

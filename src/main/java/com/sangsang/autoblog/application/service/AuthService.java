@@ -1,7 +1,17 @@
 package com.sangsang.autoblog.application.service;
 
+import java.util.Optional;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.sangsang.autoblog.application.command.SignupCommand;
+import com.sangsang.autoblog.domain.exception.DuplicateException;
+import com.sangsang.autoblog.domain.model.CustomUserDetails;
 import com.sangsang.autoblog.domain.model.User;
 
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
@@ -9,38 +19,63 @@ import com.sangsang.autoblog.domain.port.out.UserHistoryRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOAuthRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOriginRepositoryPort;
 
+import jakarta.transaction.Transactional;
+
 @Service
-public class AuthService implements AuthUseCase{
+@Transactional
+public class AuthService implements AuthUseCase, UserDetailsService{
+
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private final UserHistoryRepositoryPort userRepositoryPort;
     private final UserOriginRepositoryPort userOriginRepositoryPort;
     private final UserOAuthRepositoryPort userOAuthRepositoryPort;
 
-    public AuthService(
-        UserHistoryRepositoryPort userRepositoryPort,
-        UserOriginRepositoryPort userOriginRepositoryPort,
-        UserOAuthRepositoryPort userOAuthRepositoryPort
-    ) {
-        this.userRepositoryPort = userRepositoryPort;
-        this.userOriginRepositoryPort = userOriginRepositoryPort;
-        this.userOAuthRepositoryPort = userOAuthRepositoryPort;
+    public AuthService(UserHistoryRepositoryPort userRepositoryPort,
+                        UserOriginRepositoryPort userOriginRepositoryPort,
+                        UserOAuthRepositoryPort userOAuthRepositoryPort,
+                        BCryptPasswordEncoder passwordEncoder) {
+            this.userRepositoryPort = userRepositoryPort;
+            this.userOriginRepositoryPort = userOriginRepositoryPort;
+            this.userOAuthRepositoryPort = userOAuthRepositoryPort;
+            this.passwordEncoder = passwordEncoder;
     }
 
+    /*
+     * Override for UserDetailsService : Srping security
+     */
     @Override
-    public User signin(User signinInfo) {
-        // TODO : 인증 로직 구현
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        Optional<User> optUser = userOriginRepositoryPort.findByUsername(username);
+
+        if(optUser.isPresent()){
+            return new CustomUserDetails(optUser.get());
+        }
         return null;
     }
 
     @Override
-    public User signup(User newUser) {
-        // TODO : 회원가입 로직 구현
+    public User signup(SignupCommand cmd) {
 
-        User exsistUser = userOriginRepositoryPort.findByUserName(newUser.userName);
-        if(exsistUser != null) {
-            throw new IllegalArgumentException("User already exists");
+        if(userOriginRepositoryPort.existsByUsername(cmd.username())){
+            throw new IllegalArgumentException("Username already exists");
         }
 
-        return userOriginRepositoryPort.save(newUser);
+        if(userOriginRepositoryPort.existsByEmail(cmd.email())){
+            throw new IllegalArgumentException("Email already exists");
+        }
+        
+        try {
+            User newUser = User.signupOriginFrom(cmd);
+            newUser.changePassword(passwordEncoder.encode(newUser.password));
+            return userOriginRepositoryPort.save(newUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Duplicate info found during signup");
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        return null;
     }
 }
