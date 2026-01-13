@@ -3872,7 +3872,7 @@ textarea.form-control-lg {
 
 .btn-group > .btn:not(:first-child),
 .btn-group > .btn-group:not(:first-child) {
-  margin-left: -1px;
+  margin-left: 3px;
 }
 .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
 .btn-group > .btn-group:not(:last-child) > .btn {
@@ -3945,6 +3945,21 @@ textarea.form-control-lg {
   color: #0d6efd;
   text-decoration: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+.navbar-dark .navbar-nav .nav-link.signout-btn {
+  border: none;
+  background: none;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  text-align: left;
+  border-radius: 0;
+  border-bottom: dotted 1px rgba(255, 255, 255, 0.25);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.navbar-dark .navbar-nav .nav-link.signout-btn:hover {
+  color: rgba(255, 255, 255, 0.75);
 }
 @media (prefers-reduced-motion: reduce) {
   .nav-link {

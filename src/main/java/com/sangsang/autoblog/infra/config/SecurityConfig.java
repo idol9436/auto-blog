@@ -28,13 +28,21 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
-                .loginPage("/auth/sginin")
+                .loginPage("/auth/signin")
                 .loginProcessingUrl("/auth/signin")
                 .usernameParameter("userId")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/home")
-                .permitAll());
-
+                .permitAll()
+            )
+            .logout(logout -> logout
+                    .logoutUrl("/auth/signout")
+                    .logoutSuccessUrl("/home")
+            )
+            .sessionManagement(sessionManagement -> sessionManagement
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(true) //추가로그인 차단
+            );
 
         return http.build();
     }
