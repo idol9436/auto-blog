@@ -4,6 +4,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sangsang.autoblog.domain.model.Prompt;
 
+import lombok.Setter;
+
+@Setter
 public class PromptRequestDTO {
 
     private String promptText;

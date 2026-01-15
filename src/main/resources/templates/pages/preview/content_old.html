@@ -24,9 +24,6 @@
                         <h2 class="fw-bolder mb-4 mt-5" th:text="${content.summary} ?: '샘플 요약'">샘플 요약</h2>
                         <p class="fs-5 mb-4" th:text="${content.body} ?: '본문이 여기에 표시됩니다.'">본문이 여기에 표시됩니다.</p>
                     </section>
-                    <section>
-                        <div th:utext="${content.HTMLbyMarkdown}"></div>
-                    </section>
                 </article>
                 <section th:replace="~{fragments/section::commentSection}"></section>
             </div>

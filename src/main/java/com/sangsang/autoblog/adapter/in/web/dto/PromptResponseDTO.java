@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PromptResponseDTO {
     
+    private String HTMLbyMarkdown;
     private String title;
     private String body;
     private String[] tags;
@@ -20,6 +21,7 @@ public class PromptResponseDTO {
 
     public static PromptResponseDTO from(PostContent content) {
         PromptResponseDTO dto = new PromptResponseDTO();
+        dto.HTMLbyMarkdown = content.mdText;
         dto.title = content.title;
         dto.body = content.body;
         dto.tags = content.tags;

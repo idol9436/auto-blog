@@ -17,6 +17,7 @@
 - signin Native 로그인 로직 정리
 - 로그인된 사용자만 Prompt 가능 : 로그인안하면 로그인창으로
 - 로그인 DB연동
+- 세션
 
 ## TODO NOW
 - 기능 중심 개발
@@ -30,7 +31,7 @@
 
 ### Infra
 - DB 생성 및 H2, JPA, Mybatis 연동 테스트
-- 세션 / OAUTH 확장
+- OAUTH 확장
 
 ### Business
 - 템플릿 고도화 : Content(text+body+summury+tag+image...) > md 파일로 간소화 및 UI레이아웃 유연성 증대
