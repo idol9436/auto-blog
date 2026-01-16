@@ -10,23 +10,9 @@
         <div class="row">
             <div class="col-lg-8">
                 <article>
-                    <header class="mb-4">
-                        <h1 class="fw-bolder mb-1" th:text="${content.title} ?: 'Welcome to Blog Post!'">Welcome to Blog Post!</h1>
-                        <div class="text-muted fst-italic mb-2" th:text="${content.date} ?: '2024-01-01 · AutoBlog'">2024-01-01 · AutoBlog</div>
-                        <div th:with="tagList=${content.tags ?: {'Web Design','HTML','Freebies'}}">
-                            <a class="badge bg-secondary text-decoration-none link-light" href="#!" th:each="tag : ${tagList}" th:text="${tag}">Tag</a>
-                        </div>
-                    </header>
-                    <figure class="mb-4">
-                        <img class="img-fluid rounded" th:src="${content.imageUrl} ?: 'https://dummyimage.com/900x400/ced4da/6c757d.jpg'" alt="cover">
-                    </figure>
                     <section class="mb-5">
-                        <h2 class="fw-bolder mb-4 mt-5" th:text="${content.summary} ?: '샘플 요약'">샘플 요약</h2>
-                        <p class="fs-5 mb-4" th:text="${content.body} ?: '본문이 여기에 표시됩니다.'">본문이 여기에 표시됩니다.</p>
-                    </section>
-                    <section>
                         <div th:utext="${content.HTMLbyMarkdown}"></div>
-                    </section>
+                    </section> 
                 </article>
                 <section th:replace="~{fragments/section::commentSection}"></section>
             </div>

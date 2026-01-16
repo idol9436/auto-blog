@@ -13,10 +13,10 @@ body.page:not(.page-hello) {
 
     display: flex;
     flex-direction: column;
+    justify-content: flex-start !important; /* Override styles_hello.css center alignment */
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    padding-top: var(--header-height); /* place content immediately after fixed header */
     background-color: #f8f9fa;
     color: #212529;
     font-family: var(--bs-body-font-family, "Segoe UI", system-ui, sans-serif);
@@ -36,11 +36,15 @@ body.page:not(.page-hello) > * {
 
 body.page:not(.page-hello) .layout-shell {
     flex: 1 0 auto;
-    margin-top: clamp(6rem, 25vh, 18rem); /* ~300px on 1080p laptop, responsive with bounds */
-    padding-top: 0;
+    padding-top: var(--header-height); /* Push content below fixed navbar */
     padding-bottom: calc(var(--footer-offset) + env(safe-area-inset-bottom, 0px));
     min-height: calc(100vh - var(--footer-offset) - var(--header-height));
     color: #212529; /* ensure readable text on light background */
+}
+
+/* Large top margin only for home page (when no page-specific class exists) */
+body.page:not(.page-hello) .layout-shell:not(:has(.page-legacy-post, .page-auth)) {
+    padding-top: clamp(6rem, 25vh, 18rem); /* ~300px on 1080p laptop, responsive with bounds */
 }
 
 /* Restore form visibility on non-hero pages */
@@ -131,23 +135,21 @@ body.page.page-hello main {
     width: 100%;
 }
 
-/* Auth pages: give breathing room under fixed header */
+/* Auth pages: add spacing below fixed header */
 body.page:not(.page-hello) .page-auth {
-    margin-top: clamp(3rem, 18vh, 12rem) !important;
-    padding-top: clamp(1.75rem, 6vh, 4rem) !important;  /* override .py-5 */
+    padding-top: 2rem;
     padding-bottom: clamp(2.75rem, 5vw, 4.5rem) !important;
 }
 
-/* Legacy post preview: keep clear of the fixed header */
+/* Legacy post preview: add spacing below fixed header */
 body.page:not(.page-hello) .page-legacy-post {
-    margin-top: clamp(18rem, 80vh, 52rem); /* bumped ~20vh for more breathing room */
-    padding-top: clamp(2rem, 3.5vw, 3.25rem);
+    padding-top: 2rem;
     padding-bottom: clamp(2.75rem, 5vw, 4.25rem);
 }
 
-/* Remove extra Bootstrap margin that pushes content too far down */
+/* Remove Bootstrap mt-5 margin */
 body.page:not(.page-hello) .page-legacy-post .container.mt-5 {
-    margin-top: clamp(2rem, 3vw + 0.5rem, 3.25rem);
+    margin-top: 0 !important;
 }
 
 /* Footer padding tweak for compact content */

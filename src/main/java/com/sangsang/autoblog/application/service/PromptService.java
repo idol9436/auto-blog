@@ -4,6 +4,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.stereotype.Service;
 
+import com.sangsang.autoblog.application.command.PromptCommand;
 import com.sangsang.autoblog.domain.model.PostContent;
 import com.sangsang.autoblog.domain.model.Prompt;
 
@@ -19,32 +20,35 @@ public class PromptService implements PromptUseCase{
     }
 
     @Override
-    public PostContent getAutoContent(Prompt prompt) {
+    public PostContent getPostContent(PromptCommand promptCmd) {
         
         PostContent content = null;
         
         try {
-            String mdText = promptPort.genTextByPrompt(prompt.parsingToMarkdownText());
-            // Parser parser = Parser.builder().build();
-            // HtmlRenderer renderer = HtmlRenderer.builder().build();
+            Prompt prompt = Prompt.from(promptCmd);
+            String title = promptPort.genTextByPrompt(prompt.parseToTitle());
+            String body = promptPort.genTextByPrompt(prompt.parseToBody());
+            String[] tags = promptPort.genTextByPrompt(prompt.parseToTags()).split(",");
+            String summary = promptPort.genTextByPrompt(prompt.parseToSummary());
+            String imageUrl = promptPort.genTextByPrompt(prompt.parseToImageUrl());
 
-            // String markdown = post.getMarkdown();
-            // String html = renderer.render(parser.parse(markdown));
+            content = new PostContent(title, body, tags, imageUrl, summary);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            // String title = promptPort.genTextByPrompt(prompt.parsingToTitle());
-            // String body = promptPort.genTextByPrompt(prompt.parsingToBody());
-            // String[] tags = {""};
-            // String summary = "";
-            // String imageUrl = "";
-            // String[] tags = promptPort.genTextByPrompt(prompt.parsingToTags()).split(",");
-            // String summary = promptPort.genTextByPrompt(prompt.parsingToSummary());
-            // String imageUrl = promptPort.genTextByPrompt(prompt.parsingToImageUrl());
+        return content;
+    }
 
-            // content = new PostContent(title, body, tags, imageUrl, summary);
-            System.out.println(mdText);
-            System.out.println("==================================================");
+    @Override
+    public PostContent getMarkdownContent(PromptCommand promptCmd){
+                
+        PostContent content = null;
+        
+        try {
+            Prompt prompt = Prompt.from(promptCmd);
+            String mdText = promptPort.genTextByPrompt(prompt.parseToMarkdownText());
             content = new PostContent(this.parseMarkdownToHTML(mdText));
-            System.out.println(this.parseMarkdownToHTML(mdText));
             
         } catch (Exception e) {
             e.printStackTrace();

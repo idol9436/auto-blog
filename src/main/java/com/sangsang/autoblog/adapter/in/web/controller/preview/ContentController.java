@@ -29,21 +29,32 @@ public class ContentController {
         PostContent content = new PostContent(); // Sample content for preview    
 
         mav.addObject("content", content);
-        mav.setViewName("pages/preview/content");
+        mav.setViewName("pages/preview/content-post");
         return mav;
     }
     
     
     @PostMapping("/prompt")
-    public ModelAndView getAutoContent(PromptRequestDTO promptRequestDTO) {
+    public ModelAndView getMarkdownContent(PromptRequestDTO promptRequestDTO) {
         ModelAndView mav = new ModelAndView();
 
-        PostContent content = promptUseCase.getAutoContent(promptRequestDTO.toPromptDomain());
+        PostContent content = promptUseCase.getMarkdownContent(promptRequestDTO.toCommand());
 
         mav.addObject("content", PromptResponseDTO.from(content));
-        mav.setViewName("pages/preview/content");
+        mav.setViewName("pages/preview/content-markdown");
         return mav;
     }
     
+    // TODO : 예비
+    @PostMapping("/prompt/post")
+    public ModelAndView getPostContent(PromptRequestDTO promptRequestDTO) {
+        ModelAndView mav = new ModelAndView();
+
+        PostContent content = promptUseCase.getPostContent(promptRequestDTO.toCommand());
+
+        mav.addObject("content", PromptResponseDTO.from(content));
+        mav.setViewName("pages/preview/content-post");
+        return mav;
+    }
     
 }

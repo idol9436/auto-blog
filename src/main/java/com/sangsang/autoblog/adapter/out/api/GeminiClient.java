@@ -40,7 +40,6 @@ public class GeminiClient implements PromptApiPort {
 
 
     private String getTextByOnlyTextPrompt(String promptText) {
-        System.out.println(promptText);
         String result = "";
         Client client = Client.builder().apiKey(API_KEY).build();
 
