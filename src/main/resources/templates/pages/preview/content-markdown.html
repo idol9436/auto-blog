@@ -3,60 +3,105 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{common/layout}"
       layout:fragment="content">
-<script>
-</script>
+<link rel="stylesheet" th:href="@{/css/content-markdown.css}">
 <main class="page-legacy-post">
     <section class="container mt-5">
-        <div class="row">
+        <!-- 상단 프롬프트 입력 영역 -->
+        <div class="row prompt-input-section">
             <div class="col-lg-8">
-                <article>
-                    <section class="mb-5">
-                        <div th:utext="${content.HTMLbyMarkdown}"></div>
-                    </section> 
-                </article>
-                <section th:replace="~{fragments/section::commentSection}"></section>
+                <form th:action="@{/content/prompt}" method="post" id="frm">
+                    <input class="form-control" name="promptText" type="text" placeholder="Input text" aria-label="Input text">
+                </form>
             </div>
             <div class="col-lg-4">
-                <div class="card mb-4">
-                    <div class="card-header">프롬프트 다시 입력</div>
-                    <div class="card-body">
-                        <form th:action="@{/content/prompt}" method="post" id="frm">
-                            <div class="input-group">
-                                <input class="form-control" name="promptText" type="text" placeholder="write post title" aria-label="write post title" aria-describedby="button-search">
-                                <button class="btn btn-primary" id="button-search" type="submit">Go!</button>
-                            </div>
-                        </form>
-                    </div>
+                <div class="prompt-buttons">
+                    <button class="btn btn-outline-secondary" type="button" onclick="handleRegenerate()">Regenerate</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="handleAiConfirm()">AiConfirm</button>
                 </div>
-                <div class="card mb-4">
-                    <div class="card-header">Categories</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li><a href="#!">Web Design</a></li>
-                                    <li><a href="#!">HTML</a></li>
-                                    <li><a href="#!">Freebies</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li><a href="#!">JavaScript</a></li>
-                                    <li><a href="#!">CSS</a></li>
-                                    <li><a href="#!">Tutorials</a></li>
-                                </ul>
-                            </div>
-                        </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <article id="modeViewer" class="content-area active">
+                    <section class="mb-5">
+                        <div th:utext="${content.HTMLbyMarkdown}"></div>
+                    </section>
+                </article>
+
+                <article id="modeEdit" class="content-area">
+                    <section class="mb-5">
+                        <!-- <textarea id="markdownEditor" th:text="${content.rawMarkdown}"></textarea> -->
+                    </section>
+                </article>
+
+                <section th:replace="~{fragments/section::commentSection}"></section>
+            </div>
+
+            <!-- 우측 사이드바 -->
+            <div class="col-lg-4">
+                <div class="sidebar-controls">
+                    <!-- 모드 전환 스위치 -->
+                    <div class="mode-switch">
+                        <span id="labelViewer" class="mode-label active">modeViewer</span>
+                        <label class="switch">
+                            <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="labelEdit" class="mode-label">modeEdit</span>
                     </div>
-                </div>
-                <div class="card mb-4">
-                    <div class="card-header">카테고리 설정 안내</div>
-                    <div class="card-body">카테고리는 TistoryAPI에서 별도의 category-id를 받아야 설정 할 수 있습니다.</div>
+
+                    <!-- Upload to 버튼 -->
+                    <div class="upload-section">
+                        <button class="btn btn-upload w-100" onclick="handleUpload()">Upload to</button>
+                    </div>
+
+                    <!-- Guide 버튼 -->
+                    <div>
+                        <button class="btn btn-guide w-100" onclick="handleGuide()">Guide</button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 </main>
+<script>
+    function toggleMode() {
+        const modeSwitch = document.getElementById('modeSwitch');
+        const modeViewer = document.getElementById('modeViewer');
+        const modeEdit = document.getElementById('modeEdit');
+        const labelViewer = document.getElementById('labelViewer');
+        const labelEdit = document.getElementById('labelEdit');
+
+        if (modeSwitch.checked) {
+            modeViewer.classList.remove('active');
+            modeEdit.classList.add('active');
+            labelViewer.classList.remove('active');
+            labelEdit.classList.add('active');
+        } else {
+            modeEdit.classList.remove('active');
+            modeViewer.classList.add('active');
+            labelEdit.classList.remove('active');
+            labelViewer.classList.add('active');
+        }
+    }
+
+    function handleRegenerate() {
+        console.log('Regenerate clicked');
+    }
+
+    function handleAiConfirm() {
+        console.log('AiConfirm clicked');
+    }
+
+    function handleUpload() {
+        console.log('Upload clicked');
+    }
+
+    function handleGuide() {
+        console.log('Guide clicked');
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/scripts.js?v=3}"></script>
 </html>

@@ -1,0 +1,240 @@
+/* Content Markdown Page Styles */
+
+/* 상단 프롬프트 입력 영역 */
+.prompt-input-section {
+    margin-bottom: 1rem;
+}
+
+.prompt-input-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.prompt-input-card .card-body {
+    padding: 1rem;
+}
+
+/* 프롬프트 버튼 영역 */
+.prompt-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.prompt-buttons .btn {
+    flex: 1;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #ffffff;
+}
+
+.prompt-buttons .btn:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: #ffffff;
+}
+
+/* 프롬프트 입력 필드 */
+.prompt-input-section .form-control {
+    background-color: #ffffff !important;
+    border: 1px solid #ced4da;
+    color: #333 !important;
+}
+
+.prompt-input-section .form-control::placeholder {
+    color: #888888 !important;
+    opacity: 1 !important;
+}
+
+.prompt-input-section .form-control::-webkit-input-placeholder {
+    color: #888888 !important;
+    opacity: 1 !important;
+}
+
+.prompt-input-section .form-control::-moz-placeholder {
+    color: #888888 !important;
+    opacity: 1 !important;
+}
+
+.prompt-input-section .form-control:-ms-input-placeholder {
+    color: #888888 !important;
+    opacity: 1 !important;
+}
+
+/* 모드 전환 스위치 */
+.mode-switch {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.mode-switch .mode-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.mode-switch .switch {
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0 12px;
+}
+
+/* 토글 스위치 */
+.switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #ccc;
+}
+
+/* 모드 텍스트 강조 */
+.mode-switch .mode-label {
+    transition: all 0.3s;
+}
+
+.mode-switch .mode-label.active {
+    color: #2196F3;
+    font-weight: 700;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* 마크다운 에디터 */
+#markdownEditor {
+    width: 100%;
+    min-height: 500px;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #fafafa;
+    resize: vertical;
+}
+
+#markdownEditor:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+}
+
+/* 콘텐츠 영역 전환 */
+.content-area {
+    display: none;
+    background-color: #1a5f6a;
+    color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    min-height: 400px;
+}
+
+.content-area.active {
+    display: block;
+}
+
+.content-area h1,
+.content-area h2,
+.content-area h3,
+.content-area h4,
+.content-area h5,
+.content-area h6 {
+    color: #ffffff;
+}
+
+.content-area p,
+.content-area li,
+.content-area span {
+    color: #ffffff;
+}
+
+/* 업로드 섹션 */
+.upload-section {
+    margin-bottom: 1rem;
+}
+
+.upload-section .form-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+/* 버튼 스타일 개선 */
+.btn-upload {
+    background-color: #2196F3;
+    border-color: #2196F3;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-upload:hover {
+    background-color: #1976D2;
+    border-color: #1976D2;
+}
+
+.btn-guide {
+    background-color: #00BCD4;
+    border-color: #00BCD4;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-guide:hover {
+    background-color: #0097A7;
+    border-color: #0097A7;
+}
+
+/* 사이드바 */
+.sidebar-controls {
+    position: sticky;
+    top: 80px;
+}
