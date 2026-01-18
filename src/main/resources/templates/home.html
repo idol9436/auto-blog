@@ -6,18 +6,18 @@
       th:with="pageClass='page-hello'">
 <main class="legacy-hello text-center page-hello is-preload">
     <header id="header">
-        <h1 class="white-header">아이디어를 입력하면<br>바로 블로그가 완성됩니다.</h1>
-        <p>openAI API를 활용해 한 줄 프롬프트로 포스트를 생성하고<br>Tistory에 자동 포스팅까지 이어집니다.</p>
+        <h1 class="white-header">주제를 입력하면<br>바로 블로그가 완성됩니다.</h1>
+        <p>생성형AI-API를 활용해 한 줄 프롬프트로 포스트를 생성하고<br>당신의 블로그에 자동 포스팅까지 이어집니다.</p>
     </header>
 
-    <form id="signup-form" class="mt-4" method="post" th:action="@{/content/prompt}">
+    <form id="signup-form" class="mt-4" method="post" th:action="@{/content/prompt/markdown}">
         <input type="text" name="promptText" id="prompt" placeholder="input your prompt">
         <input type="submit" value="prompt">
     </form>
 
     <div class="mt-5 text-white">
         <div class="btn-group">
-            <a class="btn btn-primary" th:href="@{/content/preview}">프리뷰 보기</a>
+            <a class="btn btn-primary" th:href="@{/content/preview/markdown}">프리뷰 보기</a>
             <a class="btn btn-outline-light" th:href="@{/auth/signup}">무료로 시작</a>
         </div>
     </div>

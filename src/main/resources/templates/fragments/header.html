@@ -9,9 +9,16 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/content/preview}">Preview</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/auth/signin}">Sign in</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/auth/signup}">Sign up</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/content/preview/post}">Preview</a></li>
+
+                    <li sec:authorize="isAnonymous()" class="nav-item"><a class="nav-link" th:href="@{/auth/signin}">Sign in</a></li>
+                    <li sec:authorize="isAnonymous()" class="nav-item"><a class="nav-link" th:href="@{/auth/signup}">Sign up</a></li>
+
+                    <li sec:authorize="isAuthenticated()" class="nav-item">
+                        <button type="submit" class="nav-link signout-btn" form="signoutForm">Sign out</button>
+                        <form th:action="@{/auth/signout}" method="post" id="signoutForm"></form>
+                    </li>
+
                 </ul>
             </div>
         </div>

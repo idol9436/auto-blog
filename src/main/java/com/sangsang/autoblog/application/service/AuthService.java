@@ -46,13 +46,10 @@ public class AuthService implements AuthUseCase, UserDetailsService{
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         Optional<User> optUser = userOriginRepositoryPort.findByUsername(username);
+        optUser.orElseThrow(() -> new UsernameNotFoundException(username));
 
-        if(optUser.isPresent()){
-            return new CustomUserDetails(optUser.get());
-        }
-        return null;
+        return new CustomUserDetails(optUser.get());
     }
 
     @Override

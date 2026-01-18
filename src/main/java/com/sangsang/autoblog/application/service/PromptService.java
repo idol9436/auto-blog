@@ -2,6 +2,7 @@ package com.sangsang.autoblog.application.service;
 
 import org.springframework.stereotype.Service;
 
+import com.sangsang.autoblog.application.command.PromptCommand;
 import com.sangsang.autoblog.domain.model.PostContent;
 import com.sangsang.autoblog.domain.model.Prompt;
 
@@ -17,21 +18,36 @@ public class PromptService implements PromptUseCase{
     }
 
     @Override
-    public PostContent getAutoContent(Prompt prompt) {
+    public PostContent getPostContent(PromptCommand promptCmd) {
         
         PostContent content = null;
         
         try {
-            String title = promptPort.genTextByPrompt(prompt.pasingToTitle());
-            String body = promptPort.genTextByPrompt(prompt.pasingToBody());
-            String[] tags = {""};
-            String summary = "";
-            String imageUrl = "";
-            // String[] tags = promptPort.genTextByPrompt(prompt.pasingToTags()).split(",");
-            // String summary = promptPort.genTextByPrompt(prompt.pasingToSummary());
-            // String imageUrl = promptPort.genTextByPrompt(prompt.pasingToImageUrl());
+            Prompt prompt = Prompt.from(promptCmd);
+            String title = promptPort.genTextByPrompt(prompt.parseToTitle());
+            String body = promptPort.genTextByPrompt(prompt.parseToBody());
+            String[] tags = promptPort.genTextByPrompt(prompt.parseToTags()).split(",");
+            String summary = promptPort.genTextByPrompt(prompt.parseToSummary());
+            String imageUrl = promptPort.genTextByPrompt(prompt.parseToImageUrl());
 
-            content = new PostContent(title, body, tags, imageUrl, summary);
+            content = PostContent.postContentFrom(title, body, tags, imageUrl, summary);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return content;
+    }
+
+    @Override
+    public PostContent getMarkdownContent(PromptCommand promptCmd){
+        
+        PostContent content = null;
+        
+        try {
+            Prompt prompt = Prompt.from(promptCmd);
+            String mdText = promptPort.genTextByPrompt(prompt.parseToMarkdownText());
+            content = PostContent.markdownContentFrom(mdText);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

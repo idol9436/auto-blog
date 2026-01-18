@@ -23,18 +23,26 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // static 자원에 대한 접근 모두 허용
                 .requestMatchers("/", "/home", "/healthCheck").permitAll()
                 .requestMatchers("/auth/signup", "/auth/signin").permitAll()
-                .requestMatchers("/content/preview").permitAll()
+                .requestMatchers("/content/preview/**").permitAll()
                 // .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
-                .loginPage("/auth/sginin")
+                .loginPage("/auth/signin")
                 .loginProcessingUrl("/auth/signin")
                 .usernameParameter("userId")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/home")
-                .permitAll());
-
+                .permitAll()
+            )
+            .logout(logout -> logout
+                    .logoutUrl("/auth/signout")
+                    .logoutSuccessUrl("/home")
+            )
+            .sessionManagement(sessionManagement -> sessionManagement
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(true) //추가로그인 차단
+            );
 
         return http.build();
     }

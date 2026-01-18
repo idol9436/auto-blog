@@ -3872,7 +3872,7 @@ textarea.form-control-lg {
 
 .btn-group > .btn:not(:first-child),
 .btn-group > .btn-group:not(:first-child) {
-  margin-left: -1px;
+  margin-left: 3px;
 }
 .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
 .btn-group > .btn-group:not(:last-child) > .btn {
@@ -3945,6 +3945,43 @@ textarea.form-control-lg {
   color: #0d6efd;
   text-decoration: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+.navbar-dark .navbar-nav .nav-link.signout-btn {
+  border-top: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: dotted 1px rgba(255, 255, 255, 0.25) !important;
+  background: none !important;
+  padding: 0.5rem 1rem !important;
+  margin: 0 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  height: auto !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  width: auto !important;
+  vertical-align: middle !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  text-decoration: none !important;
+  border-radius: 0 !important;
+  transition: color 0.15s ease-in-out, border-bottom-color 0.15s ease-in-out !important;
+}
+
+.navbar-dark .navbar-nav .nav-link.signout-btn:hover,
+.navbar-dark .navbar-nav .nav-link.signout-btn:focus {
+  color: rgba(255, 255, 255, 0.75) !important;
+  border-bottom-color: transparent !important;
+  background: none !important;
+}
+
+/* Fix li height for signout button */
+.navbar-nav .nav-item:has(.signout-btn) {
+  display: flex !important;
+  align-items: center !important;
+  height: auto !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .nav-link {

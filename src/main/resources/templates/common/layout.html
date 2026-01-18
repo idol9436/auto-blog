@@ -17,3 +17,14 @@
     <script th:src="@{/js/scripts.js?v=3}"></script>
 </body>
 </html>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector("header"); // 실제 헤더 selector
+        if (header) {
+            document.body.style.setProperty(
+                "--header-height",
+                `${header.offsetHeight}px`
+            );
+        }
+    });
+</script>

@@ -2,14 +2,19 @@ package com.sangsang.autoblog.adapter.in.web.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sangsang.autoblog.domain.model.Prompt;
+import com.sangsang.autoblog.application.command.PromptCommand;
 
-public class PromptRequestDTO {
+public record PromptRequestDTO(
+    
+    String promptText,
+    MultipartFile[] promptFiles
 
-    private String promptText;
-    private MultipartFile[] promptFiles;
-
-    public Prompt toPromptDomain() {
-        return new Prompt(promptText, promptFiles);
+) {
+    public PromptCommand toCommand() {
+        return new PromptCommand(
+            promptText, 
+            promptFiles
+        );
     }
+
 }
