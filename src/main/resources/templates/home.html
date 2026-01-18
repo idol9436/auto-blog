@@ -10,14 +10,14 @@
         <p>생성형AI-API를 활용해 한 줄 프롬프트로 포스트를 생성하고<br>당신의 블로그에 자동 포스팅까지 이어집니다.</p>
     </header>
 
-    <form id="signup-form" class="mt-4" method="post" th:action="@{/content/prompt}">
+    <form id="signup-form" class="mt-4" method="post" th:action="@{/content/prompt/markdown}">
         <input type="text" name="promptText" id="prompt" placeholder="input your prompt">
         <input type="submit" value="prompt">
     </form>
 
     <div class="mt-5 text-white">
         <div class="btn-group">
-            <a class="btn btn-primary" th:href="@{/content/preview}">프리뷰 보기</a>
+            <a class="btn btn-primary" th:href="@{/content/preview/markdown}">프리뷰 보기</a>
             <a class="btn btn-outline-light" th:href="@{/auth/signup}">무료로 시작</a>
         </div>
     </div>

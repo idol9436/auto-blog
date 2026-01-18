@@ -22,25 +22,36 @@ public class ContentController {
         this.promptUseCase = promptUseCase;
     }
 
-    @GetMapping("/preview")
-    public ModelAndView getSamplePreview() {
+    @GetMapping("/preview/post")
+    public ModelAndView getPostPreview() {
         ModelAndView mav = new ModelAndView();
 
-        PostContent content = new PostContent(); // Sample content for preview    
+        PostContent content = PostContent.getPreviewPost();
 
-        mav.addObject("content", content);
+        mav.addObject("content", PromptResponseDTO.from(content));
         mav.setViewName("pages/preview/content-post");
         return mav;
     }
     
+    @GetMapping("/preview/markdown")
+    public ModelAndView getMarkdownPreview() {
+        ModelAndView mav = new ModelAndView();
+
+        PostContent content = PostContent.getPreviewMarkdown();
+
+        mav.addObject("content", PromptResponseDTO.from(content));
+        mav.setViewName("pages/preview/content-markdown");
+        return mav;
+    }
     
-    @PostMapping("/prompt")
+    @PostMapping("/prompt/markdown")
     public ModelAndView getMarkdownContent(PromptRequestDTO promptRequestDTO) {
         ModelAndView mav = new ModelAndView();
 
         PostContent content = promptUseCase.getMarkdownContent(promptRequestDTO.toCommand());
 
-        mav.addObject("content", PromptResponseDTO.from(content));
+        mav.addObject("content", PromptResponseDTO.from(content)); 
+        mav.addObject("originPrompt", promptRequestDTO.promptText()); 
         mav.setViewName("pages/preview/content-markdown");
         return mav;
     }

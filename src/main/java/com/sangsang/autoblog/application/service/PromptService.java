@@ -1,7 +1,5 @@
 package com.sangsang.autoblog.application.service;
 
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.stereotype.Service;
 
 import com.sangsang.autoblog.application.command.PromptCommand;
@@ -32,7 +30,7 @@ public class PromptService implements PromptUseCase{
             String summary = promptPort.genTextByPrompt(prompt.parseToSummary());
             String imageUrl = promptPort.genTextByPrompt(prompt.parseToImageUrl());
 
-            content = new PostContent(title, body, tags, imageUrl, summary);
+            content = PostContent.postContentFrom(title, body, tags, imageUrl, summary);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,24 +40,18 @@ public class PromptService implements PromptUseCase{
 
     @Override
     public PostContent getMarkdownContent(PromptCommand promptCmd){
-                
+        
         PostContent content = null;
         
         try {
             Prompt prompt = Prompt.from(promptCmd);
             String mdText = promptPort.genTextByPrompt(prompt.parseToMarkdownText());
-            content = new PostContent(this.parseMarkdownToHTML(mdText));
+            content = PostContent.markdownContentFrom(mdText);
             
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return content;
-    }
-
-    public String parseMarkdownToHTML(String mdText){
-        Parser parser = Parser.builder().build();
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
-        return renderer.render(parser.parse(mdText));
     }
 }

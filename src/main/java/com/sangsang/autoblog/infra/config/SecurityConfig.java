@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // static 자원에 대한 접근 모두 허용
                 .requestMatchers("/", "/home", "/healthCheck").permitAll()
                 .requestMatchers("/auth/signup", "/auth/signin").permitAll()
-                .requestMatchers("/content/preview").permitAll()
+                .requestMatchers("/content/preview/**").permitAll()
                 // .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )

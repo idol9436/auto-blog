@@ -6,11 +6,10 @@
 <link rel="stylesheet" th:href="@{/css/content-markdown.css}">
 <main class="page-legacy-post">
     <section class="container mt-5">
-        <!-- 상단 프롬프트 입력 영역 -->
         <div class="row prompt-input-section">
             <div class="col-lg-8">
-                <form th:action="@{/content/prompt}" method="post" id="frm">
-                    <input class="form-control" name="promptText" type="text" placeholder="Input text" aria-label="Input text">
+                <form th:action="@{/content/prompt/markdown}" method="post" id="frm">
+                    <input class="form-control" name="promptText" type="text" placeholder="Input prompt" aria-label="Input prompt" th:value="${originPrompt}"></input>
                 </form>
             </div>
             <div class="col-lg-4">
@@ -25,38 +24,34 @@
             <div class="col-lg-8">
                 <article id="modeViewer" class="content-area active">
                     <section class="mb-5">
-                        <div th:utext="${content.HTMLbyMarkdown}"></div>
+                        <div id="view">loading...</div>
                     </section>
                 </article>
 
-                <article id="modeEdit" class="content-area">
+                <article id="modeEditer" class="content-area">
                     <section class="mb-5">
-                        <!-- <textarea id="markdownEditor" th:text="${content.rawMarkdown}"></textarea> -->
+                        <textarea id="markdownEditor" oninput="onEdit(this.value)" th:text="${content.rawMarkdown}"></textarea>
                     </section>
                 </article>
 
                 <section th:replace="~{fragments/section::commentSection}"></section>
             </div>
 
-            <!-- 우측 사이드바 -->
             <div class="col-lg-4">
                 <div class="sidebar-controls">
-                    <!-- 모드 전환 스위치 -->
                     <div class="mode-switch">
                         <span id="labelViewer" class="mode-label active">modeViewer</span>
                         <label class="switch">
                             <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
                             <span class="slider"></span>
                         </label>
-                        <span id="labelEdit" class="mode-label">modeEdit</span>
+                        <span id="labelEdit" class="mode-label">modeEditer</span>
                     </div>
 
-                    <!-- Upload to 버튼 -->
                     <div class="upload-section">
                         <button class="btn btn-upload w-100" onclick="handleUpload()">Upload to</button>
                     </div>
 
-                    <!-- Guide 버튼 -->
                     <div>
                         <button class="btn btn-guide w-100" onclick="handleGuide()">Guide</button>
                     </div>
@@ -65,27 +60,45 @@
         </div>
     </section>
 </main>
-<script>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+<script th:inline="javascript">
+    const viewEL = document.getElementById("view");
+    let contentText = /*[[${content.rawMarkdown}]]*/ '';
+
+    function render(contentText) {
+        const html = marked.parse(contentText);
+        viewEL.innerHTML = DOMPurify.sanitize(html);
+    }
+    
+    render(contentText);
+
+    function onEdit(v) {
+        contentText = v;
+    }
+    
     function toggleMode() {
+        render(contentText);
+
         const modeSwitch = document.getElementById('modeSwitch');
         const modeViewer = document.getElementById('modeViewer');
-        const modeEdit = document.getElementById('modeEdit');
+        const modeEditer = document.getElementById('modeEditer');
         const labelViewer = document.getElementById('labelViewer');
         const labelEdit = document.getElementById('labelEdit');
 
         if (modeSwitch.checked) {
             modeViewer.classList.remove('active');
-            modeEdit.classList.add('active');
+            modeEditer.classList.add('active');
             labelViewer.classList.remove('active');
             labelEdit.classList.add('active');
         } else {
-            modeEdit.classList.remove('active');
+            modeEditer.classList.remove('active');
             modeViewer.classList.add('active');
             labelEdit.classList.remove('active');
             labelViewer.classList.add('active');
         }
     }
-
     function handleRegenerate() {
         console.log('Regenerate clicked');
     }
