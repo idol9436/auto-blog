@@ -61,7 +61,53 @@
     </section>
 </main>
 
-<!-- <script type="module"> import { Octokit } from "https://esm.sh/@octokit/core"; </script>  https://github.com/octokit/core.js#readme 공식문서 제안 -->
+<!-- GitHub Upload Modal -->
+<div th:replace="~{fragments/modal :: modal(
+    modalId='githubUploadModal',
+    title='Upload to GitHub',
+    size='',
+    confirmText='Upload',
+    confirmBtnClass='btn-primary',
+    bodyContent=~{::githubUploadBody}
+)}">
+    <th:block th:fragment="githubUploadBody">
+        <form id="githubUploadForm">
+            <div class="mb-3">
+                <label for="githubToken" class="form-label">GitHub Token (Personal Access Token)</label>
+                <input type="password" class="form-control" id="githubToken" name="token" required
+                       placeholder="ghp_xxxxxxxxxxxx">
+                <div class="form-text">
+                    <a href="https://github.com/settings/tokens" target="_blank">Generate token here</a>
+                    (requires repo scope)
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="githubOwner" class="form-label">Owner (GitHub Username)</label>
+                <input type="text" class="form-control" id="githubOwner" name="owner" required
+                       placeholder="your-username">
+            </div>
+            <div class="mb-3">
+                <label for="githubRepo" class="form-label">Repository Name</label>
+                <input type="text" class="form-control" id="githubRepo" name="repo" required
+                       placeholder="my-blog">
+            </div>
+            <div class="mb-3">
+                <label for="githubPath" class="form-label">File Path</label>
+                <input type="text" class="form-control" id="githubPath" name="path" required
+                       placeholder="_posts/2024-01-01-my-post.md">
+                <div class="form-text">Path including filename (e.g., _posts/my-post.md)</div>
+            </div>
+            <div class="mb-3">
+                <label for="commitMessage" class="form-label">Commit Message</label>
+                <input type="text" class="form-control" id="commitMessage" name="message"
+                       placeholder="Add new blog post" value="Add new blog post via AutoBlog">
+            </div>
+        </form>
+        <div id="uploadStatus" class="alert d-none mt-3" role="alert"></div>
+    </th:block>
+</div>
+
+<!-- <script type="module"> import { Octokit } from "https://esm.sh/@octokit/core"; </script> --> <!-- https://github.com/octokit/core.js#readme 공식문서 제안 -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 <script th:inline="javascript">
@@ -109,68 +155,115 @@
         console.log('AiConfirm clicked');
     }
 
-
     function handleGuide() {
         console.log('Guide clicked');
     }
 
 </script>
 <script type="module">
-    // github 로그인 안되어있으면 모달창 만들어서 Token 및 repo 정보 받기
-    import { Octokit } from "https://cdn.skypack.dev/@octokit/core"; // https://github.com/octokit/core.js#readme 공식문서 제안 
+    import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
-    const editerEL = document.getElementById("markdownEditor");
+    const editorEl = document.getElementById("markdownEditor");
+    const uploadModal = new bootstrap.Modal(document.getElementById('githubUploadModal'));
+    const uploadForm = document.getElementById('githubUploadForm');
+    const uploadStatus = document.getElementById('uploadStatus');
 
-    let markdownText = editerEL.value;
-
-    // https://docs.github.com/ko/rest/repos/contents?utm_source=chatgpt.com&apiVersion=2022-11-28#create-or-update-file-contents
-    const octokit = new Octokit({
-        auth: 'your github token(classic)'
-    })
-
-    async function createRepo() {
-        await octokit.request("POST /user/repos", {
-            name: "createRepo",
-            private: false
-        });
+    function getMarkdownContent() {
+        return editorEl.value;
     }
 
-    async function createFile() {
-        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-            owner: 'github id : The account owner of the repository. The name is not case sensitive.',
-            repo: 'repository name : The name of the repository without the .git extension. The name is not case sensitive.',
-            path: 'path + filename : if write as src/test.md, you can see at /src/test.md',
-            message: 'a new commit message',
-            committer: {
-                name: 'user.name',
-                email: 'user.email'
-            },
-            content: btoa(unescape(encodeURIComponent(markdownText))), //ex : 'bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz',
-            headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-            }
-        });
+    function showStatus(message, type) {
+        uploadStatus.className = `alert alert-${type} mt-3`;
+        uploadStatus.textContent = message;
+        uploadStatus.classList.remove('d-none');
     }
 
-    async function handleUpload()  {
+    function hideStatus() {
+        uploadStatus.classList.add('d-none');
+    }
+
+    async function uploadToGitHub(config) {
+        const octokit = new Octokit({ auth: config.token });
+        const content = btoa(unescape(encodeURIComponent(getMarkdownContent())));
 
         try {
-            const res = await createFile();
-            console.error(res);
+            // 이미 경로에 파일이 존재하는지 확인 : sha(exist 파일 키)
+            let sha = null;
+            try {
+                const existing = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+                    owner: config.owner,
+                    repo: config.repo,
+                    path: config.path,
+                    headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+                });
+                sha = existing.data.sha;
+            } catch (e) {
+                // File doesn't exist, that's fine for create
+            }
+
+            // 경로에 파일 없으면 Create 있으면 Update
+            const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+                owner: config.owner,
+                repo: config.repo,
+                path: config.path,
+                message: config.message || 'Add new blog post via AutoBlog',
+                content: content,
+                ...(sha && { sha }), // Include sha if updating existing file
+                headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+            });
+
+            return { success: true, data: response.data };
         } catch (error) {
             if (error.status === 404) {
-                await createRepo();
-                await createFile();
+                // Repository might not exist
+                throw new Error('Repository not found. Please check owner and repo name.');
+            } else if (error.status === 401) {
+                throw new Error('Authentication failed. Please check your token.');
             } else {
-                console.error(error);
+                throw error;
             }
         }
-
     }
 
-    document
-        .getElementById("uploadBtn")
-        .addEventListener("click", handleUpload);
+    // Open modal when upload button clicked
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+        hideStatus();
+        uploadModal.show();
+    });
+
+    // Handle modal confirm button
+    document.addEventListener('modal:confirm', async (e) => {
+        if (e.detail.modalId !== 'githubUploadModal') return;
+
+        const formData = new FormData(uploadForm);
+        const config = {
+            token: formData.get('token'),
+            owner: formData.get('owner'),
+            repo: formData.get('repo'),
+            path: formData.get('path'),
+            message: formData.get('message')
+        };
+
+        // Validation
+        if (!config.token || !config.owner || !config.repo || !config.path) {
+            showStatus('Please fill in all required fields.', 'danger');
+            return;
+        }
+
+        try {
+            showStatus('Uploading...', 'info');
+            const result = await uploadToGitHub(config);
+            showStatus('Successfully uploaded! File URL: ' + result.data.content.html_url, 'success');
+
+            // Close modal after 2 seconds on success
+            setTimeout(() => {
+                uploadModal.hide();
+            }, 2000);
+        } catch (error) {
+            showStatus('Upload failed: ' + error.message, 'danger');
+            console.error('Upload error:', error);
+        }
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/scripts.js?v=3}"></script>

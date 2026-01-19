@@ -1,0 +1,104 @@
+/* Common Modal Styles */
+
+/* Modal backdrop blur effect */
+.modal-backdrop.show {
+    backdrop-filter: blur(2px);
+}
+
+/* Modal content styling */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal header */
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #333;
+}
+
+.modal-header .btn-close {
+    padding: 0.5rem;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+}
+
+/* Modal body */
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body .form-label {
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 0.5rem;
+}
+
+.modal-body .form-control {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.625rem 0.875rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.modal-body .form-control:focus {
+    border-color: #2196F3;
+    box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.15);
+}
+
+.modal-body .form-text {
+    font-size: 0.8125rem;
+    color: #6c757d;
+}
+
+.modal-body .form-text a {
+    color: #2196F3;
+    text-decoration: none;
+}
+
+.modal-body .form-text a:hover {
+    text-decoration: underline;
+}
+
+/* Modal footer */
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    gap: 0.5rem;
+}
+
+.modal-footer .btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Modal sizes */
+.modal-dialog.modal-lg {
+    max-width: 700px;
+}
+
+.modal-dialog.modal-xl {
+    max-width: 900px;
+}
+
+/* Status alerts in modal */
+.modal-body .alert {
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+/* Animation enhancement */
+.modal.fade .modal-dialog {
+    transform: scale(0.95) translateY(-10px);
+    transition: transform 0.2s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
