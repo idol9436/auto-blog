@@ -68,4 +68,16 @@ public class ContentController {
         return mav;
     }
     
+    @PostMapping("/prompt/markdown/confirm")
+    public ModelAndView getConfirmedMDContent(PromptRequestDTO promptRequestDTO) {
+        ModelAndView mav = new ModelAndView();
+
+        PostContent content = promptUseCase.getConfirmedMDContent(promptRequestDTO.toCommand());
+
+        mav.addObject("content", PromptResponseDTO.from(content)); 
+        mav.addObject("originPrompt", promptRequestDTO.promptText()); 
+        mav.setViewName("pages/preview/content-markdown");
+        return mav;
+    }
+
 }

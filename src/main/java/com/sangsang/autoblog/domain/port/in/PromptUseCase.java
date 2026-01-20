@@ -6,4 +6,6 @@ import com.sangsang.autoblog.domain.model.PostContent;
 public interface PromptUseCase {
     PostContent getPostContent(PromptCommand prompt);
     PostContent getMarkdownContent(PromptCommand prompt);
+    PostContent getConfirmedMDContent(PromptCommand prompt);
+
 }

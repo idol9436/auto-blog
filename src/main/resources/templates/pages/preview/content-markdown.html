@@ -14,8 +14,8 @@
             </div>
             <div class="col-lg-4">
                 <div class="prompt-buttons">
-                    <button class="btn btn-outline-secondary" type="button" onclick="handleRegenerate()">Regenerate</button>
-                    <button class="btn btn-outline-secondary" type="button" onclick="handleAiConfirm()">AiConfirm</button>
+                    <button id="regenerate" class="btn btn-outline-secondary" type="button" onclick="handleRegenerate()">다시 생성하기</button>
+                    <button id="aiConfirm" class="btn btn-outline-secondary" type="button" onclick="handleAiConfirm()">AI 컨펌받기</button>
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
                     </section>
                 </article>
 
-                <section th:replace="~{fragments/section::commentSection}"></section>
+                <!-- <section th:replace="~{fragments/section::commentSection}"></section> -->
             </div>
 
             <div class="col-lg-4">
@@ -148,15 +148,33 @@
         }
     }
     function handleRegenerate() {
-        console.log('Regenerate clicked');
+        const form = document.getElementById('frm');
+        form.submit();
     }
 
     function handleAiConfirm() {
-        console.log('AiConfirm clicked');
+
+        const editedText = document.getElementById("markdownEditor").value;
+
+        let form = document.createElement('form');
+        let inputPrompt = document.createElement('input');
+
+        inputPrompt.setAttribute('type','hidden');
+        inputPrompt.setAttribute('name','promptText');
+        inputPrompt.setAttribute('value', editedText);
+
+        form.appendChild(inputPrompt);
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/content/prompt/markdown/confirm');
+        form.setAttribute("charset", "UTF-8");
+
+        document.body.appendChild(form);
+        form.submit();        
     }
 
     function handleGuide() {
         console.log('Guide clicked');
+        alert('준비중입니다.');
     }
 
 </script>
