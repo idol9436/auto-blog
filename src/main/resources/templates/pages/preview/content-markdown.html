@@ -9,7 +9,7 @@
         <div class="row prompt-input-section">
             <div class="col-lg-8">
                 <form th:action="@{/content/prompt/markdown}" method="post" id="frm">
-                    <input class="form-control" name="promptText" type="text" placeholder="Input prompt" aria-label="Input prompt" th:value="${originPrompt}"></input>
+                    <input id="prompt" class="form-control" name="promptText" type="text" placeholder="Input prompt" aria-label="Input prompt" th:value="${originPrompt}"></input>
                 </form>
             </div>
             <div class="col-lg-4">
@@ -40,20 +40,24 @@
             <div class="col-lg-4">
                 <div class="sidebar-controls">
                     <div class="mode-switch">
-                        <span id="labelViewer" class="mode-label active">modeViewer</span>
+                        <span id="labelViewer" class="mode-label active">Viewer</span>
                         <label class="switch">
                             <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
                             <span class="slider"></span>
                         </label>
-                        <span id="labelEdit" class="mode-label">modeEditer</span>
+                        <span id="labelEdit" class="mode-label">Editer</span>
                     </div>
 
                     <div class="upload-section">
-                        <button class="btn btn-upload w-100" id="uploadBtn">Upload to</button>
+                        <button class="btn btn-upload w-100" id="uploadBtn">Github에 커밋하기</button>
                     </div>
 
-                    <div>
+                    <div class="side-other-btn">
                         <button class="btn btn-guide w-100" onclick="handleGuide()">Guide</button>
+                    </div>
+
+                    <div class="side-other-btn">
+                        <button class="btn btn-guide w-100" onclick="openGithub()">Github에서 확인</button>
                     </div>
                 </div>
             </div>
@@ -148,33 +152,53 @@
         }
     }
     function handleRegenerate() {
+
+        const promptInput = document.getElementById('prompt')
+        promptInput.setAttribute('readonly', true);
+        render(`## 컨텐츠를 재생성합니다...\n[요청한 내용]\n`+promptInput.value);
+
+        const modeSwitch = document.getElementById('modeSwitch');
+        modeSwitch.checked = false;
+        toggleMode();
+
         const form = document.getElementById('frm');
         form.submit();
     }
 
-    function handleAiConfirm() {
+    async function handleAiConfirm() {
 
-        const editedText = document.getElementById("markdownEditor").value;
+        const editer = document.getElementById("markdownEditor")
+        const editedText = editer.value;
 
-        let form = document.createElement('form');
-        let inputPrompt = document.createElement('input');
+        editer.setAttribute('disabled', true);
+        render(`## AI가 컨펌중입니다... 완료 후 Editer로 이동합니다.\n완료 후 \`<!--ISSUE-->\` 주석을 확인해주세요.`);
 
-        inputPrompt.setAttribute('type','hidden');
-        inputPrompt.setAttribute('name','promptText');
-        inputPrompt.setAttribute('value', editedText);
+        const res = await fetch("/content/prompt/markdown/confirm", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: new URLSearchParams({
+                markdownText : editedText
+            })
+        });
 
-        form.appendChild(inputPrompt);
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', '/content/prompt/markdown/confirm');
-        form.setAttribute("charset", "UTF-8");
+        const confirmedText = await res.text();
+        editer.value = confirmedText;
+        editer.setAttribute('disabled', false);
 
-        document.body.appendChild(form);
-        form.submit();        
+        const modeSwitch = document.getElementById('modeSwitch');
+        modeSwitch.checked = true;
+        toggleMode();
     }
 
     function handleGuide() {
         console.log('Guide clicked');
         alert('준비중입니다.');
+    }
+
+    function openGithub() {
+        window.open('https://github.com', '_blank');
     }
 
 </script>
@@ -243,13 +267,11 @@
         }
     }
 
-    // Open modal when upload button clicked
     document.getElementById("uploadBtn").addEventListener("click", () => {
         hideStatus();
         uploadModal.show();
     });
 
-    // Handle modal confirm button
     document.addEventListener('modal:confirm', async (e) => {
         if (e.detail.modalId !== 'githubUploadModal') return;
 
@@ -262,7 +284,6 @@
             message: formData.get('message')
         };
 
-        // Validation
         if (!config.token || !config.owner || !config.repo || !config.path) {
             showStatus('Please fill in all required fields.', 'danger');
             return;
@@ -273,7 +294,6 @@
             const result = await uploadToGitHub(config);
             showStatus('Successfully uploaded! File URL: ' + result.data.content.html_url, 'success');
 
-            // Close modal after 2 seconds on success
             setTimeout(() => {
                 uploadModal.hide();
             }, 2000);

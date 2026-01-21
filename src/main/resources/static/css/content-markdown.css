@@ -150,7 +150,7 @@ input:checked + .slider:before {
 /* 마크다운 에디터 */
 #markdownEditor {
     width: 100%;
-    min-height: 500px;
+    min-height: 70vh;
     font-family: 'Courier New', 'Consolas', monospace;
     font-size: 14px;
     line-height: 1.6;
@@ -209,6 +209,10 @@ input:checked + .slider:before {
 }
 
 /* 버튼 스타일 개선 */
+.side-other-btn {
+    margin-bottom: 1rem;
+}
+
 .btn-upload {
     background-color: #2196F3;
     border-color: #2196F3;

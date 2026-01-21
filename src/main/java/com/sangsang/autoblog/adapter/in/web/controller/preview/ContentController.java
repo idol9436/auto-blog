@@ -4,6 +4,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sangsang.autoblog.adapter.in.web.dto.PromptRequestDTO;
@@ -69,15 +71,11 @@ public class ContentController {
     }
     
     @PostMapping("/prompt/markdown/confirm")
-    public ModelAndView getConfirmedMDContent(PromptRequestDTO promptRequestDTO) {
-        ModelAndView mav = new ModelAndView();
-
-        PostContent content = promptUseCase.getConfirmedMDContent(promptRequestDTO.toCommand());
-
-        mav.addObject("content", PromptResponseDTO.from(content)); 
-        mav.addObject("originPrompt", promptRequestDTO.promptText()); 
-        mav.setViewName("pages/preview/content-markdown");
-        return mav;
+    @ResponseBody
+    public String getConfirmedContent(@RequestParam String markdownText) {
+        PromptRequestDTO reqDto = new PromptRequestDTO(markdownText, null);
+        PostContent content = promptUseCase.getConfirmedMDContent(reqDto.toCommand());
+        return content.rawMarkdown;
     }
 
 }
