@@ -229,32 +229,49 @@
         const content = btoa(unescape(encodeURIComponent(getMarkdownContent())));
 
         try {
-            // 이미 경로에 파일이 존재하는지 확인 : sha(exist 파일 키)
-            let sha = null;
-            try {
-                const existing = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-                    owner: config.owner,
-                    repo: config.repo,
-                    path: config.path,
-                    headers: { 'X-GitHub-Api-Version': '2022-11-28' }
-                });
-                sha = existing.data.sha;
-            } catch (e) {
-                // File doesn't exist, that's fine for create
-            }
+            // // 이미 경로에 파일이 존재하는지 확인 : sha(exist 파일 키)
+            // let sha = null;
+            // try {
+            //     const existing = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+            //         owner: config.owner,
+            //         repo: config.repo,
+            //         path: config.path,
+            //         headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+            //     });
+            //     sha = existing.data.sha;
+            // } catch (e) {
+            //     // File doesn't exist, that's fine for create
+            // }
+            
+            // // 경로에 파일 없으면 Create 있으면 Update
+            // const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+            //     owner: config.owner,
+            //     repo: config.repo,
+            //     path: config.path,
+            //     message: config.message || 'Add new blog post via AutoBlog',
+            //     content: content,
+            //     ...(sha && { sha }), // Include sha if updating existing file
+            //     headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+            // });
 
-            // 경로에 파일 없으면 Create 있으면 Update
-            const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-                owner: config.owner,
-                repo: config.repo,
-                path: config.path,
-                message: config.message || 'Add new blog post via AutoBlog',
-                content: content,
-                ...(sha && { sha }), // Include sha if updating existing file
-                headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+            const res = await fetch("/upload/api", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=UTF-8"
+                },
+                body: JSON.stringify({
+                    type: "Github",
+                    token: config.token, 
+                    owner: config.owner, 
+                    repo: config.repo, 
+                    path: config.path,
+                    commitMsg: config.message,
+                    content: content,
+                })
             });
 
-            return { success: true, data: response.data };
+            return;
+            // return { success: true, data: res };
         } catch (error) {
             if (error.status === 404) {
                 // Repository might not exist
