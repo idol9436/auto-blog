@@ -270,8 +270,7 @@
                 })
             });
 
-            return;
-            // return { success: true, data: res };
+            return { success: true, data: res };
         } catch (error) {
             if (error.status === 404) {
                 // Repository might not exist
@@ -309,7 +308,10 @@
         try {
             showStatus('Uploading...', 'info');
             const result = await uploadToGitHub(config);
-            showStatus('Successfully uploaded! File URL: ' + result.data.content.html_url, 'success');
+            const body = await result.data.text();
+            const json = JSON.parse(body);
+            console.log('Upload result:',json);
+            showStatus('Successfully uploaded! File URL: ' + json.content.html_url, 'success');
 
             setTimeout(() => {
                 uploadModal.hide();

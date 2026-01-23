@@ -64,7 +64,6 @@ public class PromptService implements PromptUseCase{
             String mdText = promptPort.genTextByPrompt(prompt.parseToConfirmMD());
             
             if(mdText.length() < 10 && mdText.toUpperCase().contains("CONFIRMED")){
-                System.out.println("isConfirmed : " + mdText);
                 content = PostContent.markdownContentFrom(promptCmd.promptText());
             } else {
                 content = PostContent.markdownContentFrom(mdText);

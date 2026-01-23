@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sangsang.autoblog.adapter.in.web.dto.UploadRequestDTO;
 import com.sangsang.autoblog.domain.port.in.UploadUseCase;
 
+import reactor.core.publisher.Mono;
+
 @Controller
 @RequestMapping("/upload")
 public class UploadController {
@@ -21,11 +23,9 @@ public class UploadController {
 
     @PostMapping("/api")
     @ResponseBody
-    public String upload(@RequestBody UploadRequestDTO dto){
+    public Mono<String> upload(@RequestBody UploadRequestDTO dto){
 
-        uploadUseCase.upload(dto.toCommand());
-
-        return "ok";
+        return uploadUseCase.upload(dto.toCommand());
 
     }
 

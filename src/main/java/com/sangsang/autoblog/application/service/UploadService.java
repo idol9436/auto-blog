@@ -7,6 +7,8 @@ import com.sangsang.autoblog.domain.model.GithubInfo;
 import com.sangsang.autoblog.domain.port.in.UploadUseCase;
 import com.sangsang.autoblog.domain.port.out.GithubRestApiPort;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class UploadService implements UploadUseCase {
 
@@ -17,10 +19,11 @@ public class UploadService implements UploadUseCase {
   }
 
   @Override
-  public void upload(UploadCommand cmd) {
+  public Mono<String> upload(UploadCommand cmd) {
       if(cmd.type().equals("Github")){
-        githubRestApiPort.commitToGithub(GithubInfo.from(cmd)).doOnNext(res -> System.out.println(res));
+        return githubRestApiPort.commitToGithub(GithubInfo.from(cmd));
       }
 
+      return Mono.just("ok");
   }
 }
