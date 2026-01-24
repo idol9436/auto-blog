@@ -7,5 +7,6 @@ public record UploadCommand(
     String repo, 
     String path, 
     String commitMsg, 
-    String content
+    String content,
+    String sha
 ) {} 

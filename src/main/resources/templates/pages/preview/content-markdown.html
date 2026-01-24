@@ -229,55 +229,67 @@
         const content = btoa(unescape(encodeURIComponent(getMarkdownContent())));
 
         try {
-            // // 이미 경로에 파일이 존재하는지 확인 : sha(exist 파일 키)
-            // let sha = null;
-            // try {
-            //     const existing = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-            //         owner: config.owner,
-            //         repo: config.repo,
-            //         path: config.path,
-            //         headers: { 'X-GitHub-Api-Version': '2022-11-28' }
-            //     });
-            //     sha = existing.data.sha;
-            // } catch (e) {
-            //     // File doesn't exist, that's fine for create
-            // }
-            
-            // // 경로에 파일 없으면 Create 있으면 Update
-            // const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-            //     owner: config.owner,
-            //     repo: config.repo,
-            //     path: config.path,
-            //     message: config.message || 'Add new blog post via AutoBlog',
-            //     content: content,
-            //     ...(sha && { sha }), // Include sha if updating existing file
-            //     headers: { 'X-GitHub-Api-Version': '2022-11-28' }
-            // });
+            let sha = null; // sha(exist 파일 키)
+            try {
+                const resExist = await fetch("/upload/find", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8"
+                    },
+                    body: JSON.stringify({
+                        type: "Github",
+                        token: config.token, 
+                        owner: config.owner, 
+                        repo: config.repo, 
+                        path: config.path
+                    })
+                });
+                const body = await resExist.text();
+                const json = JSON.parse(body);
+                sha = json.sha;
+                if(sha) console.log('기존 파일이 존재합니다. 파일을 업데이트 하겠습니다... sha:', sha);
+            } catch (error) {
+                console.log('경로에 파일이 존재하지 않습니다. 새로 생성합니다...');
+            }
+            try {
+                const resUpload = await fetch("/upload/push", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8"
+                    },
+                    body: JSON.stringify({
+                        type: "Github",
+                        token: config.token, 
+                        owner: config.owner, 
+                        repo: config.repo, 
+                        path: config.path,
+                        commitMsg: config.message,
+                        content: content,
+                        sha: sha,
+                    })
+                });
+                return { success: true, data: resUpload };
+            } catch (error) {
+                throw new Error('파일 저장중 오류가 발생했습니다.');
+            }
 
-            const res = await fetch("/upload/api", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json; charset=UTF-8"
-                },
-                body: JSON.stringify({
-                    type: "Github",
-                    token: config.token, 
-                    owner: config.owner, 
-                    repo: config.repo, 
-                    path: config.path,
-                    commitMsg: config.message,
-                    content: content,
-                })
-            });
-
-            return { success: true, data: res };
         } catch (error) {
             if (error.status === 404) {
-                // Repository might not exist
-                throw new Error('Repository not found. Please check owner and repo name.');
+                const answer = confirm('존재하지 않는 Repository입니다. 새로 생성할까요?');
+                if (answer) {
+                    showStatus('Repository 생성했습니다!');
+                    // await octokit.request('POST /user/repos', {
+                    //     name: config.repo,
+                    //     headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+                    // });
+                    // return uploadToGitHub(config);
+                } else {
+                    showStatus('Repository 생성에 실패했습니다.');
+                }
             } else if (error.status === 401) {
-                throw new Error('Authentication failed. Please check your token.');
+                showStatus('Authentication failed. token을 확인해주세요.');
             } else {
+                showStatus('알 수 없는 오류입니다. [' + error.status + ']' + error.message);
                 throw error;
             }
         }
@@ -307,15 +319,23 @@
 
         try {
             showStatus('Uploading...', 'info');
+
             const result = await uploadToGitHub(config);
             const body = await result.data.text();
             const json = JSON.parse(body);
+
+            if(!result.success){
+                showStatus('Upload failed: ' + json.message, 'danger');
+                return;
+            }
+
             console.log('Upload result:',json);
             showStatus('Successfully uploaded! File URL: ' + json.content.html_url, 'success');
 
             setTimeout(() => {
                 uploadModal.hide();
-            }, 2000);
+            }, 10000);
+
         } catch (error) {
             showStatus('Upload failed: ' + error.message, 'danger');
             console.error('Upload error:', error);

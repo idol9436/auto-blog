@@ -9,7 +9,8 @@ public record UploadRequestDTO(
     String repo, 
     String path, 
     String commitMsg,
-    String content
+    String content,
+    String sha
 ) {
     public UploadCommand toCommand() {
         return new UploadCommand(
@@ -19,7 +20,8 @@ public record UploadRequestDTO(
             repo, 
             path, 
             commitMsg,
-            content
+            content,
+            sha
         );
     }
 }

@@ -21,7 +21,15 @@ public class UploadController {
         this.uploadUseCase = uploadUseCase;
     }
 
-    @PostMapping("/api")
+    @PostMapping("/find")
+    @ResponseBody
+    public Mono<String> findExist(@RequestBody UploadRequestDTO dto){
+
+        return uploadUseCase.findExist(dto.toCommand());
+
+    }
+
+    @PostMapping("/push")
     @ResponseBody
     public Mono<String> upload(@RequestBody UploadRequestDTO dto){
 

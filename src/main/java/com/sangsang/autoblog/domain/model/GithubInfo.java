@@ -9,6 +9,7 @@ public class GithubInfo {
     public final String path;
     public final String commitMsg;
     public final String content;
+    public final String sha;
 
     private GithubInfo(
         String token,
@@ -16,7 +17,8 @@ public class GithubInfo {
         String repo,
         String path,
         String commitMsg,
-        String content
+        String content,
+        String sha
     ){
         this.token = token;
         this.owner = owner;
@@ -24,9 +26,10 @@ public class GithubInfo {
         this.path = path;
         this.commitMsg = commitMsg;
         this.content = content;
+        this.sha = sha;
     }
 
     public static GithubInfo from(UploadCommand cmd){
-        return new GithubInfo(cmd.token(), cmd.owner(), cmd.repo(), cmd.path(), cmd.commitMsg(), cmd.content());
+        return new GithubInfo(cmd.token(), cmd.owner(), cmd.repo(), cmd.path(), cmd.commitMsg(), cmd.content(), cmd.sha());
     }
 }

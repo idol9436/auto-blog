@@ -19,9 +19,24 @@ public class UploadService implements UploadUseCase {
   }
 
   @Override
+  public Mono<String> findExist(UploadCommand cmd) {
+      if(cmd.type().equals("Github")){
+        System.out.println("Find to Github");
+        return githubRestApiPort.getExistInfo(GithubInfo.from(cmd));
+      }
+
+      return Mono.just("ok");
+  }
+
+  @Override
   public Mono<String> upload(UploadCommand cmd) {
       if(cmd.type().equals("Github")){
-        return githubRestApiPort.commitToGithub(GithubInfo.from(cmd));
+        if(cmd.sha() != null && !cmd.sha().isEmpty()){
+          System.out.println("Update to Github");
+          return githubRestApiPort.updateToGithub(GithubInfo.from(cmd));
+        }
+        System.out.println("Create to Github");
+        return githubRestApiPort.createToGithub(GithubInfo.from(cmd));
       }
 
       return Mono.just("ok");
