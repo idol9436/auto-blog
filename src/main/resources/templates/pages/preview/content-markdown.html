@@ -226,8 +226,8 @@
 
     async function uploadToGitHub(config) {
         const octokit = new Octokit({ auth: config.token });
-        const content = btoa(unescape(encodeURIComponent(getMarkdownContent())));
-
+        const content = getMarkdownContent();
+        
         try {
             let sha = null; // sha(exist 파일 키)
             try {
@@ -274,7 +274,7 @@
             }
 
         } catch (error) {
-            if (error.status === 404) {
+            if (error.status === 404) { // Mono가 500으로 리턴해서 수정해야함
                 const answer = confirm('존재하지 않는 Repository입니다. 새로 생성할까요?');
                 if (answer) {
                     showStatus('Repository 생성했습니다!');
