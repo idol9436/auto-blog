@@ -9,13 +9,13 @@
         <div class="row prompt-input-section">
             <div class="col-lg-8">
                 <form th:action="@{/content/prompt/markdown}" method="post" id="frm">
-                    <input class="form-control" name="promptText" type="text" placeholder="Input prompt" aria-label="Input prompt" th:value="${originPrompt}"></input>
+                    <input id="prompt" class="form-control" name="promptText" type="text" placeholder="Input prompt" aria-label="Input prompt" th:value="${originPrompt}"></input>
                 </form>
             </div>
             <div class="col-lg-4">
                 <div class="prompt-buttons">
-                    <button class="btn btn-outline-secondary" type="button" onclick="handleRegenerate()">Regenerate</button>
-                    <button class="btn btn-outline-secondary" type="button" onclick="handleAiConfirm()">AiConfirm</button>
+                    <button id="regenerate" class="btn btn-outline-secondary" type="button" onclick="handleRegenerate()">다시 생성하기</button>
+                    <button id="aiConfirm" class="btn btn-outline-secondary" type="button" onclick="handleAiConfirm()">AI 컨펌받기</button>
                 </div>
             </div>
         </div>
@@ -34,26 +34,30 @@
                     </section>
                 </article>
 
-                <section th:replace="~{fragments/section::commentSection}"></section>
+                <!-- <section th:replace="~{fragments/section::commentSection}"></section> -->
             </div>
 
             <div class="col-lg-4">
                 <div class="sidebar-controls">
                     <div class="mode-switch">
-                        <span id="labelViewer" class="mode-label active">modeViewer</span>
+                        <span id="labelViewer" class="mode-label active">Viewer</span>
                         <label class="switch">
                             <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
                             <span class="slider"></span>
                         </label>
-                        <span id="labelEdit" class="mode-label">modeEditer</span>
+                        <span id="labelEdit" class="mode-label">Editer</span>
                     </div>
 
                     <div class="upload-section">
-                        <button class="btn btn-upload w-100" onclick="handleUpload()">Upload to</button>
+                        <button class="btn btn-upload w-100" id="uploadBtn">Github에 커밋하기</button>
                     </div>
 
-                    <div>
+                    <div class="side-other-btn">
                         <button class="btn btn-guide w-100" onclick="handleGuide()">Guide</button>
+                    </div>
+
+                    <div class="side-other-btn">
+                        <button class="btn btn-guide w-100" onclick="openGithub()">Github에서 확인</button>
                     </div>
                 </div>
             </div>
@@ -61,9 +65,57 @@
     </section>
 </main>
 
+<!-- GitHub Upload Modal -->
+<div th:replace="~{fragments/modal :: modal(
+    modalId='githubUploadModal',
+    title='Upload to GitHub',
+    size='',
+    confirmText='Upload',
+    confirmBtnClass='btn-primary',
+    bodyContent=~{::githubUploadBody}
+)}">
+    <th:block th:fragment="githubUploadBody">
+        <form id="githubUploadForm">
+            <div class="mb-3">
+                <label for="githubToken" class="form-label">GitHub Token (Personal Access Token)</label>
+                <input type="password" class="form-control" id="githubToken" name="token" required
+                       placeholder="ghp_xxxxxxxxxxxx">
+                <div class="form-text">
+                    <a href="https://github.com/settings/tokens" target="_blank">Generate token here</a>
+                    (requires repo scope)
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="githubOwner" class="form-label">Owner (GitHub Username)</label>
+                <input type="text" class="form-control" id="githubOwner" name="owner" required
+                       placeholder="your-username">
+            </div>
+            <div class="mb-3">
+                <label for="githubRepo" class="form-label">Repository Name</label>
+                <input type="text" class="form-control" id="githubRepo" name="repo" required
+                       placeholder="my-blog">
+            </div>
+            <div class="mb-3">
+                <label for="githubPath" class="form-label">File Path</label>
+                <input type="text" class="form-control" id="githubPath" name="path" required
+                       placeholder="_posts/2024-01-01-my-post.md">
+                <div class="form-text">Path including filename (e.g., _posts/my-post.md)</div>
+            </div>
+            <div class="mb-3">
+                <label for="commitMessage" class="form-label">Commit Message</label>
+                <input type="text" class="form-control" id="commitMessage" name="message"
+                       placeholder="Add new blog post" value="Add new blog post via AutoBlog">
+            </div>
+        </form>
+        <div id="uploadStatus" class="alert d-none mt-3" role="alert"></div>
+    </th:block>
+</div>
+
+<!-- <script type="module"> import { Octokit } from "https://esm.sh/@octokit/core"; </script> --> <!-- https://github.com/octokit/core.js#readme 공식문서 제안 -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 <script th:inline="javascript">
+
     const viewEL = document.getElementById("view");
     let contentText = /*[[${content.rawMarkdown}]]*/ '';
 
@@ -100,20 +152,195 @@
         }
     }
     function handleRegenerate() {
-        console.log('Regenerate clicked');
+
+        const promptInput = document.getElementById('prompt')
+        promptInput.setAttribute('readonly', true);
+        render(`## 컨텐츠를 재생성합니다...\n[요청한 내용]\n`+promptInput.value);
+
+        const modeSwitch = document.getElementById('modeSwitch');
+        modeSwitch.checked = false;
+        toggleMode();
+
+        const form = document.getElementById('frm');
+        form.submit();
     }
 
-    function handleAiConfirm() {
-        console.log('AiConfirm clicked');
-    }
+    async function handleAiConfirm() {
 
-    function handleUpload() {
-        console.log('Upload clicked');
+        const editer = document.getElementById("markdownEditor")
+        const editedText = editer.value;
+
+        editer.setAttribute('disabled', true);
+        render(`## AI가 컨펌중입니다... 완료 후 Editer로 이동합니다.\n완료 후 \`<!--ISSUE-->\` 주석을 확인해주세요.`);
+
+        const res = await fetch("/content/prompt/markdown/confirm", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: new URLSearchParams({
+                markdownText : editedText
+            })
+        });
+
+        const confirmedText = await res.text();
+        editer.value = confirmedText;
+        editer.setAttribute('disabled', false);
+
+        const modeSwitch = document.getElementById('modeSwitch');
+        modeSwitch.checked = true;
+        toggleMode();
     }
 
     function handleGuide() {
         console.log('Guide clicked');
+        alert('준비중입니다.');
     }
+
+    function openGithub() {
+        window.open('https://github.com', '_blank');
+    }
+
+</script>
+<script type="module">
+    import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+
+    const editorEl = document.getElementById("markdownEditor");
+    const uploadModal = new bootstrap.Modal(document.getElementById('githubUploadModal'));
+    const uploadForm = document.getElementById('githubUploadForm');
+    const uploadStatus = document.getElementById('uploadStatus');
+
+    function getMarkdownContent() {
+        return editorEl.value;
+    }
+
+    function showStatus(message, type) {
+        uploadStatus.className = `alert alert-${type} mt-3`;
+        uploadStatus.textContent = message;
+        uploadStatus.classList.remove('d-none');
+    }
+
+    function hideStatus() {
+        uploadStatus.classList.add('d-none');
+    }
+
+    async function uploadToGitHub(config) {
+        const octokit = new Octokit({ auth: config.token });
+        const content = getMarkdownContent();
+        
+        try {
+            let sha = null; // sha(exist 파일 키)
+            try {
+                const resExist = await fetch("/upload/find", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8"
+                    },
+                    body: JSON.stringify({
+                        type: "Github",
+                        token: config.token, 
+                        owner: config.owner, 
+                        repo: config.repo, 
+                        path: config.path
+                    })
+                });
+                const body = await resExist.text();
+                const json = JSON.parse(body);
+                sha = json.sha;
+                if(sha) console.log('기존 파일이 존재합니다. 파일을 업데이트 하겠습니다... sha:', sha);
+            } catch (error) {
+                console.log('경로에 파일이 존재하지 않습니다. 새로 생성합니다...');
+            }
+            try {
+                const resUpload = await fetch("/upload/push", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8"
+                    },
+                    body: JSON.stringify({
+                        type: "Github",
+                        token: config.token, 
+                        owner: config.owner, 
+                        repo: config.repo, 
+                        path: config.path,
+                        commitMsg: config.message,
+                        content: content,
+                        sha: sha,
+                    })
+                });
+                return { success: true, data: resUpload };
+            } catch (error) {
+                throw new Error('파일 저장중 오류가 발생했습니다.');
+            }
+
+        } catch (error) {
+            if (error.status === 404) { // Mono가 500으로 리턴해서 수정해야함
+                const answer = confirm('존재하지 않는 Repository입니다. 새로 생성할까요?');
+                if (answer) {
+                    showStatus('Repository 생성했습니다!');
+                    // await octokit.request('POST /user/repos', {
+                    //     name: config.repo,
+                    //     headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+                    // });
+                    // return uploadToGitHub(config);
+                } else {
+                    showStatus('Repository 생성에 실패했습니다.');
+                }
+            } else if (error.status === 401) {
+                showStatus('Authentication failed. token을 확인해주세요.');
+            } else {
+                showStatus('알 수 없는 오류입니다. [' + error.status + ']' + error.message);
+                throw error;
+            }
+        }
+    }
+
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+        hideStatus();
+        uploadModal.show();
+    });
+
+    document.addEventListener('modal:confirm', async (e) => {
+        if (e.detail.modalId !== 'githubUploadModal') return;
+
+        const formData = new FormData(uploadForm);
+        const config = {
+            token: formData.get('token'),
+            owner: formData.get('owner'),
+            repo: formData.get('repo'),
+            path: formData.get('path'),
+            message: formData.get('message')
+        };
+
+        if (!config.token || !config.owner || !config.repo || !config.path) {
+            showStatus('Please fill in all required fields.', 'danger');
+            return;
+        }
+
+        try {
+            showStatus('Uploading...', 'info');
+
+            const result = await uploadToGitHub(config);
+            const body = await result.data.text();
+            const json = JSON.parse(body);
+
+            if(!result.success){
+                showStatus('Upload failed: ' + json.message, 'danger');
+                return;
+            }
+
+            console.log('Upload result:',json);
+            showStatus('Successfully uploaded! File URL: ' + json.content.html_url, 'success');
+
+            setTimeout(() => {
+                uploadModal.hide();
+            }, 10000);
+
+        } catch (error) {
+            showStatus('Upload failed: ' + error.message, 'danger');
+            console.error('Upload error:', error);
+        }
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/scripts.js?v=3}"></script>

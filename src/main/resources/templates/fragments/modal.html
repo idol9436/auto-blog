@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Common Modal Component
+
+  Usage:
+  <div th:replace="~{fragments/modal :: modal(
+      modalId='myModal',
+      title='Modal Title',
+      size='',
+      confirmText='Confirm',
+      confirmBtnClass='btn-primary',
+      bodyContent=~{::myModalBody}
+  )}">
+      <th:block th:fragment="myModalBody">
+          Your content here
+      </th:block>
+  </div>
+
+  Parameters:
+    - modalId: Unique ID for the modal (required)
+    - title: Modal header title (required)
+    - size: '' (default), 'modal-lg', 'modal-sm', 'modal-xl'
+    - confirmText: Text for confirm button (default: 'Confirm')
+    - confirmBtnClass: CSS class for confirm button (default: 'btn-primary')
+    - bodyContent: Fragment containing modal body content
+-->
+
+<div th:fragment="modal(modalId, title, size, confirmText, confirmBtnClass, bodyContent)"
+     class="modal fade"
+     th:id="${modalId}"
+     tabindex="-1"
+     th:aria-labelledby="${modalId} + 'Label'"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" th:classappend="${size}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:id="${modalId} + 'Label'" th:text="${title}">Modal Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <th:block th:replace="${bodyContent}">
+                    Default body content
+                </th:block>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button"
+                        class="btn"
+                        th:classappend="${confirmBtnClass} ?: 'btn-primary'"
+                        th:data-modal-id="${modalId}"
+                        th:text="${confirmText} ?: 'Confirm'"
+                        onclick="this.dispatchEvent(new CustomEvent('modal:confirm', {bubbles: true, detail: {modalId: this.dataset.modalId}}))">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simple Modal (without custom body, just message) -->
+<div th:fragment="simpleModal(modalId, title, message, confirmText, confirmBtnClass)"
+     class="modal fade"
+     th:id="${modalId}"
+     tabindex="-1"
+     th:aria-labelledby="${modalId} + 'Label'"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:id="${modalId} + 'Label'" th:text="${title}">Modal Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${message}">Modal message</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button"
+                        class="btn"
+                        th:classappend="${confirmBtnClass} ?: 'btn-primary'"
+                        th:data-modal-id="${modalId}"
+                        th:text="${confirmText} ?: 'Confirm'"
+                        onclick="this.dispatchEvent(new CustomEvent('modal:confirm', {bubbles: true, detail: {modalId: this.dataset.modalId}}))">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

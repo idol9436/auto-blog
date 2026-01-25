@@ -54,4 +54,25 @@ public class PromptService implements PromptUseCase{
 
         return content;
     }
+
+    @Override
+    public PostContent getConfirmedMDContent(PromptCommand promptCmd) {
+        PostContent content = null;
+        
+        try {
+            Prompt prompt = Prompt.from(promptCmd);
+            String mdText = promptPort.genTextByPrompt(prompt.parseToConfirmMD());
+            
+            if(mdText.length() < 10 && mdText.toUpperCase().contains("CONFIRMED")){
+                content = PostContent.markdownContentFrom(promptCmd.promptText());
+            } else {
+                content = PostContent.markdownContentFrom(mdText);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return content;
+    }
 }

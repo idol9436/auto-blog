@@ -36,7 +36,6 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        System.out.println("username: "+username);
         Optional<User> optUser;
         try {
             UserOriginEntity userEntity = userOriginRepository.findByUsername(username);
