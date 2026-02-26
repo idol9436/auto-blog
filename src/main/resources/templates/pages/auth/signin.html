@@ -26,6 +26,7 @@
                             <a class="small" href="#">비밀번호 찾기</a>
                         </div>
                         <button class="btn btn-primary w-100" type="submit">로그인</button>
+                        <button class="btn w-100" type="button" onclick="handleGithubOauth()">GitHub</button>
                     </form>
                     <p class="mt-4 mb-0 text-center small">처음이신가요? <a th:href="@{/auth/signup}">회원가입</a></p>
                 </div>
@@ -34,3 +35,14 @@
     </div>
 </main>
 </html>
+
+<script th:inline="javascript">
+    function handleGithubOauth() {
+        const clientId = '';
+        const redirectUri ='';
+        const scope = 'read:user user:email';
+        const githubOauthUrl = `
+            https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+        window.location.href = githubOauthUrl;
+    }
+</script>
