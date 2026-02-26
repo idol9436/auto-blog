@@ -244,9 +244,10 @@
                         path: config.path
                     })
                 });
-                const body = await resExist.text();
-                const json = JSON.parse(body);
-                sha = json.sha;
+
+                console.log(resExist.status);
+                const body = await resExist.json();
+                sha = body.sha;
                 if(sha) console.log('기존 파일이 존재합니다. 파일을 업데이트 하겠습니다... sha:', sha);
             } catch (error) {
                 console.log('경로에 파일이 존재하지 않습니다. 새로 생성합니다...');
@@ -321,16 +322,16 @@
             showStatus('Uploading...', 'info');
 
             const result = await uploadToGitHub(config);
-            const body = await result.data.text();
-            const json = JSON.parse(body);
+            const body = await result.data.json();
+            console.log(result.data.status);
 
             if(!result.success){
-                showStatus('Upload failed: ' + json.message, 'danger');
+                showStatus('Upload failed: ' + body.message, 'danger');
                 return;
             }
 
-            console.log('Upload result:',json);
-            showStatus('Successfully uploaded! File URL: ' + json.content.html_url, 'success');
+            console.log('Upload result:', body);
+            showStatus('Successfully uploaded! File URL: ' + body.content.html_url, 'success');
 
             setTimeout(() => {
                 uploadModal.hide();

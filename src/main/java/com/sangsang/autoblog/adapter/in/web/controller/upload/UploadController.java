@@ -1,5 +1,6 @@
 package com.sangsang.autoblog.adapter.in.web.controller.upload;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,7 @@ public class UploadController {
 
     @PostMapping("/find")
     @ResponseBody
-    public Mono<String> findExist(@RequestBody UploadRequestDTO dto){
+    public Mono<ResponseEntity<String>> findExist(@RequestBody UploadRequestDTO dto){
 
         return uploadUseCase.findExist(dto.toCommand());
 
@@ -31,7 +32,7 @@ public class UploadController {
 
     @PostMapping("/push")
     @ResponseBody
-    public Mono<String> upload(@RequestBody UploadRequestDTO dto){
+    public Mono<ResponseEntity<String>> upload(@RequestBody UploadRequestDTO dto){
 
         return uploadUseCase.upload(dto.toCommand());
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -29,26 +30,25 @@ public class GithubClient implements GithubRestApiPort{
     }
 
     @Override
-    public Mono<String> getExistInfo(GithubInfo githubInfo) {
+    public Mono<ResponseEntity<String>> getExistInfo(GithubInfo githubInfo) {
         return webClient.get()
             .uri("/repos/{owner}/{repo}/contents/{path}", githubInfo.owner, githubInfo.repo, githubInfo.path)
             .headers(h -> h.setBearerAuth(githubInfo.token))
             .headers(h -> h.set("X-GitHub-Api-Version", "2022-11-28"))
             .exchangeToMono(response -> {
                 return response.bodyToMono(String.class)
-                                .flatMap(body -> {
-                                    if (response.statusCode() == HttpStatus.OK ||
-                                        response.statusCode() == HttpStatus.CREATED) {
-                                        return Mono.just(body);
-                                    }
-                                    return Mono.error(new RuntimeException(body));
-                                });
+                                .defaultIfEmpty("")
+                                .map(body ->
+                                    ResponseEntity
+                                        .status(response.statusCode())
+                                        .body(body)
+                                );
         });
     }
   
 
     @Override
-    public Mono<String> updateToGithub(GithubInfo githubInfo) {
+    public Mono<ResponseEntity<String>> updateToGithub(GithubInfo githubInfo) {
         return webClient.put()
             .uri("/repos/{owner}/{repo}/contents/{path}", githubInfo.owner, githubInfo.repo, githubInfo.path)
             .headers(h -> h.setBearerAuth(githubInfo.token))
@@ -61,18 +61,17 @@ public class GithubClient implements GithubRestApiPort{
             ))
             .exchangeToMono(response -> {
                 return response.bodyToMono(String.class)
-                                .flatMap(body -> {
-                                    if (response.statusCode() == HttpStatus.OK ||
-                                        response.statusCode() == HttpStatus.CREATED) {
-                                        return Mono.just(body);
-                                    }
-                                    return Mono.error(new RuntimeException(body));
-                                });
+                                .defaultIfEmpty("")
+                                .map(body ->
+                                    ResponseEntity
+                                        .status(response.statusCode())
+                                        .body(body)
+                                );
         });
     }
 
     @Override
-    public Mono<String> createToGithub(GithubInfo githubInfo) {
+    public Mono<ResponseEntity<String>> createToGithub(GithubInfo githubInfo) {
         return webClient.put()
             .uri("/repos/{owner}/{repo}/contents/{path}", githubInfo.owner, githubInfo.repo, githubInfo.path)
             .headers(h -> h.setBearerAuth(githubInfo.token))
@@ -84,13 +83,12 @@ public class GithubClient implements GithubRestApiPort{
             ))
             .exchangeToMono(response -> {
                 return response.bodyToMono(String.class)
-                                .flatMap(body -> {
-                                    if (response.statusCode() == HttpStatus.OK ||
-                                        response.statusCode() == HttpStatus.CREATED) {
-                                        return Mono.just(body);
-                                    }
-                                    return Mono.error(new RuntimeException(body));
-                                });
+                                .defaultIfEmpty("")
+                                .map(body ->
+                                    ResponseEntity
+                                        .status(response.statusCode())
+                                        .body(body)
+                                );
         });
     }
 

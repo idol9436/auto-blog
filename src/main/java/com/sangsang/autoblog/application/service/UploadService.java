@@ -1,5 +1,6 @@
 package com.sangsang.autoblog.application.service;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.sangsang.autoblog.application.command.UploadCommand;
@@ -19,17 +20,17 @@ public class UploadService implements UploadUseCase {
   }
 
   @Override
-  public Mono<String> findExist(UploadCommand cmd) {
+  public Mono<ResponseEntity<String>>  findExist(UploadCommand cmd) {
       if(cmd.type().equals("Github")){
         System.out.println("Find to Github");
         return githubRestApiPort.getExistInfo(GithubInfo.from(cmd));
       }
 
-      return Mono.just("ok");
+      return Mono.just(ResponseEntity.ok("ok"));
   }
 
   @Override
-  public Mono<String> upload(UploadCommand cmd) {
+  public Mono<ResponseEntity<String>>  upload(UploadCommand cmd) {
       if(cmd.type().equals("Github")){
         if(cmd.sha() != null && !cmd.sha().isEmpty()){
           System.out.println("Update to Github");
@@ -39,6 +40,7 @@ public class UploadService implements UploadUseCase {
         return githubRestApiPort.createToGithub(GithubInfo.from(cmd));
       }
 
-      return Mono.just("ok");
+      return Mono.just(ResponseEntity.ok("ok"));
+
   }
 }
