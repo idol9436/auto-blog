@@ -4,6 +4,7 @@ import com.sangsang.autoblog.application.command.SignupCommand;
 
 public class User {
     
+    public final Long id;
     public final String username;
     public String password;
     public final String role;
@@ -15,9 +16,10 @@ public class User {
     public final boolean agreeToTerms;
 
     enum Role { ROLE_USER }
-    enum AuthProvider { GOOGLE, KAKAO }
+    enum AuthProvider { GOOGLE, KAKAO, GITHUB }
 
-    private User(String username,
+    private User(Long id,
+                 String username,
                  String password,
                  String role,
                  String email, 
@@ -27,6 +29,7 @@ public class User {
                  boolean rememberMe, 
                  boolean agreeToTerms) {
         
+        this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
@@ -39,6 +42,7 @@ public class User {
     }
 
     public static User restore(
+        Long id,
         String username,
         String password,
         String role,
@@ -50,6 +54,7 @@ public class User {
         boolean agreeToTerms
     ) {
         return new User(
+            id,
             username,
             password,
             role,
@@ -63,7 +68,8 @@ public class User {
     }
 
     public static User signupOriginFrom(SignupCommand cmd) {
-        return new User(cmd.username(),
+        return new User(cmd.id(),
+                        cmd.username(),
                         cmd.password(),
                         Role.ROLE_USER.name(),
                         cmd.email(),
@@ -75,12 +81,13 @@ public class User {
     }
 
     public static User signupOAuthFrom(SignupCommand cmd) {
-        return new User(null, 
+        return new User(cmd.id(),
+                        cmd.username(), 
                         null, 
                         Role.ROLE_USER.name(), 
-                        cmd.email(), 
-                        cmd.provider(), 
-                        cmd.providerId(), 
+                        cmd.email(),
+                        AuthProvider.valueOf(cmd.provider()).name(), 
+                        cmd.providerId(),
                         cmd.extraInfo(), 
                         false, 
                         cmd.agreeToTerms());

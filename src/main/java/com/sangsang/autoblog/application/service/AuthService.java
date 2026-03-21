@@ -29,16 +29,16 @@ public class AuthService implements AuthUseCase, UserDetailsService{
     private final BCryptPasswordEncoder passwordEncoder;
 
     private final GithubOAuthPort githubOAuthPort;
-    private final UserHistoryRepositoryPort userRepositoryPort;
+    private final UserHistoryRepositoryPort userHistoryRepositoryPort;
     private final UserOriginRepositoryPort userOriginRepositoryPort;
     private final UserOAuthRepositoryPort userOAuthRepositoryPort;
 
-    public AuthService(UserHistoryRepositoryPort userRepositoryPort,
+    public AuthService(UserHistoryRepositoryPort userHistoryRepositoryPort,
                         UserOriginRepositoryPort userOriginRepositoryPort,
                         UserOAuthRepositoryPort userOAuthRepositoryPort,
                         GithubOAuthPort githubOAuthPort,
                         BCryptPasswordEncoder passwordEncoder) {
-            this.userRepositoryPort = userRepositoryPort;
+            this.userHistoryRepositoryPort = userHistoryRepositoryPort;
             this.userOriginRepositoryPort = userOriginRepositoryPort;
             this.userOAuthRepositoryPort = userOAuthRepositoryPort;
             this.githubOAuthPort = githubOAuthPort;
@@ -84,5 +84,19 @@ public class AuthService implements AuthUseCase, UserDetailsService{
     public void signinByGithub(String code) {
         String accessToken = githubOAuthPort.getGithubAccessToken(code);
         User user = githubOAuthPort.getGithubUserInfo(accessToken);
+        boolean existingOAuthUser = userOAuthRepositoryPort.existsByProviderAndProviderId(user.provider, user.providerId);
+        if (existingOAuthUser) {
+            System.out.println("existing oauth user with provider: " + user.provider + ", providerId: " + user.providerId);
+            // 세션 등록하며 로그인 처리
+        } else {
+            if (userOriginRepositoryPort.existsByEmail(user.email)) {
+                System.out.println("existing origin user with email: " + user.email);
+                // block/origin 계정과 oauth 계정 통합 유도 - 비밀번호 요구 -> provider db 등록
+
+            } else {
+                Long savedUserId = userOriginRepositoryPort.save(user).id;
+                userOAuthRepositoryPort.save(user, savedUserId);
+            }
+        }
     }
 }

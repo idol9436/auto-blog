@@ -2,14 +2,13 @@ package com.sangsang.autoblog.adapter.out.persistence.entity;
 
 import java.time.LocalDateTime;
 
+import com.sangsang.autoblog.domain.model.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
@@ -28,9 +27,8 @@ public class UserOAuthEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "origin_user_id", nullable = false)
-    private UserOriginEntity user;
+    @Column(name = "origin_user_id", nullable = false)
+    private Long originUserId;
 
     @Column(name = "provider", nullable = false)
     private String provider;
@@ -44,13 +42,15 @@ public class UserOAuthEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public UserOAuthEntity(UserOriginEntity user, String provider, String providerId) {
-        this.user = user;
+    public UserOAuthEntity(Long id, String provider, String providerId) {
+        this.originUserId = id;
         this.provider = provider;
         this.providerId = providerId;
         this.createdAt = LocalDateTime.now();
     }   
 
-    // TODO public static UserOAuthEntity fromDomain(User user){}
+    public static UserOAuthEntity fromDomain(User user) {
+        return new UserOAuthEntity(user.id, user.provider, user.providerId);
+    }
     // TODO public User toDomain(){}
 }

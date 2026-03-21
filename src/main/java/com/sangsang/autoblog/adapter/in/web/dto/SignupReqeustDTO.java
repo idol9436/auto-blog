@@ -13,6 +13,7 @@ public record SignupReqeustDTO(
 ) {
     public SignupCommand toCommand() {
         return new SignupCommand(
+            null,
             userId,
             password,
             email,

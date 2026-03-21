@@ -69,6 +69,7 @@ public class UserOriginEntity {
 
     public User toOriginUserDomain() {
         return User.restore(
+            this.id,
             this.username,
             this.password,
             this.role,

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.sangsang.autoblog.application.command.SignupCommand;
 import com.sangsang.autoblog.domain.model.User;
 import com.sangsang.autoblog.domain.port.out.GithubOAuthPort;
 
@@ -64,11 +65,18 @@ public class OAuthClient implements GithubOAuthPort {
             .bodyToMono(Map.class)
             .block();
 
-        System.out.println("User info response: " + response.get("login"));
-        System.out.println("User info response: " + response.get("id"));
-        System.out.println("User info response: " + response.get("email"));
-
-        return null;
+        SignupCommand cmd = new SignupCommand(
+            null, // id
+            (String) response.get("login"), // username
+            null, // password
+            (String) response.get("email"), // email
+            null, // extraInfo
+            true, // agreeToTerms
+            "GITHUB", // provider
+            String.valueOf(response.get("id")) // providerId
+        );
+        User user = User.signupOAuthFrom(cmd);
+        return user;
     }
     
 }
