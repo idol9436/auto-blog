@@ -3,10 +3,14 @@ package com.sangsang.autoblog.application.service;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 import com.sangsang.autoblog.application.command.SignupCommand;
@@ -20,6 +24,8 @@ import com.sangsang.autoblog.domain.port.out.UserHistoryRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOAuthRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOriginRepositoryPort;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -37,7 +43,8 @@ public class AuthService implements AuthUseCase, UserDetailsService{
                         UserOriginRepositoryPort userOriginRepositoryPort,
                         UserOAuthRepositoryPort userOAuthRepositoryPort,
                         GithubOAuthPort githubOAuthPort,
-                        BCryptPasswordEncoder passwordEncoder) {
+                        BCryptPasswordEncoder passwordEncoder
+                        ) {
             this.userHistoryRepositoryPort = userHistoryRepositoryPort;
             this.userOriginRepositoryPort = userOriginRepositoryPort;
             this.userOAuthRepositoryPort = userOAuthRepositoryPort;
@@ -81,22 +88,45 @@ public class AuthService implements AuthUseCase, UserDetailsService{
     }
 
     @Override
-    public void signinByGithub(String code) {
+    public void signinByGithub(String code, HttpServletRequest request) {
         String accessToken = githubOAuthPort.getGithubAccessToken(code);
         User user = githubOAuthPort.getGithubUserInfo(accessToken);
-        boolean existingOAuthUser = userOAuthRepositoryPort.existsByProviderAndProviderId(user.provider, user.providerId);
-        if (existingOAuthUser) {
-            System.out.println("existing oauth user with provider: " + user.provider + ", providerId: " + user.providerId);
-            // 세션 등록하며 로그인 처리
+        Optional<Long> originUserId = userOAuthRepositoryPort.findByProviderAndProviderId(user.provider, user.providerId);
+        if (originUserId.isPresent()) {
+            authenticateSession(originUserId.get(), request);
         } else {
             if (userOriginRepositoryPort.existsByEmail(user.email)) {
-                System.out.println("existing origin user with email: " + user.email);
-                // block/origin 계정과 oauth 계정 통합 유도 - 비밀번호 요구 -> provider db 등록
+                //TODO: block/origin 계정과 oauth 계정 통합 유도 - 비밀번호 요구 -> provider db 등록
 
             } else {
                 Long savedUserId = userOriginRepositoryPort.save(user).id;
                 userOAuthRepositoryPort.save(user, savedUserId);
+                authenticateSession(savedUserId, request);
             }
         }
+    }
+
+    private void authenticateSession(Long userId, HttpServletRequest request) {
+
+        User user = userOriginRepositoryPort.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+            
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+            );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute(
+            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+            context
+        );
+
     }
 }

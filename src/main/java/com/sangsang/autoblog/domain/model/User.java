@@ -22,9 +22,9 @@ public class User {
                  String username,
                  String password,
                  String role,
-                 String email, 
                  String provider,
                  String providerId,
+                 String email, 
                  String extraInfo, 
                  boolean rememberMe, 
                  boolean agreeToTerms) {
@@ -46,9 +46,9 @@ public class User {
         String username,
         String password,
         String role,
-        String email, 
         String provider,
         String providerId,
+        String email, 
         String extraInfo, 
         boolean rememberMe, 
         boolean agreeToTerms
@@ -72,9 +72,9 @@ public class User {
                         cmd.username(),
                         cmd.password(),
                         Role.ROLE_USER.name(),
-                        cmd.email(),
                         null,
                         null, 
+                        cmd.email(),
                         cmd.extraInfo(), 
                         false, 
                         cmd.agreeToTerms());
@@ -85,9 +85,9 @@ public class User {
                         cmd.username(), 
                         null, 
                         Role.ROLE_USER.name(), 
-                        cmd.email(),
                         AuthProvider.valueOf(cmd.provider()).name(), 
                         cmd.providerId(),
+                        cmd.email(),
                         cmd.extraInfo(), 
                         false, 
                         cmd.agreeToTerms());

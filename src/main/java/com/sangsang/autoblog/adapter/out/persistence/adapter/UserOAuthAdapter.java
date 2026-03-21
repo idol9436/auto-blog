@@ -1,5 +1,7 @@
 package com.sangsang.autoblog.adapter.out.persistence.adapter;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.sangsang.autoblog.adapter.out.persistence.entity.UserOAuthEntity;
@@ -25,6 +27,12 @@ public class UserOAuthAdapter implements UserOAuthRepositoryPort {
     public UserOAuthEntity save(User user, Long originUserId) {        
         UserOAuthEntity savedEntity = userOAuthRepository.save(new UserOAuthEntity(originUserId, user.provider, user.providerId));
         return savedEntity;
+    }
+
+    @Override
+    public Optional<Long> findByProviderAndProviderId(String provider, String providerId) {
+        return userOAuthRepository.findByProviderAndProviderId(provider, providerId)
+                .map(UserOAuthEntity::getOriginUserId);
     }
     
 }

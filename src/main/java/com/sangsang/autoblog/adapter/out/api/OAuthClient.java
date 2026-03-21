@@ -16,7 +16,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 @Component
 public class OAuthClient implements GithubOAuthPort {
 
-
     private final Dotenv dotenv;
     private final String GITHUB_ACCESS_TOKEN_URL;
     private final String GITHUB_CLIENT_ID;
