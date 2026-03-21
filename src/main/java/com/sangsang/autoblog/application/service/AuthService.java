@@ -15,6 +15,7 @@ import com.sangsang.autoblog.domain.model.CustomUserDetails;
 import com.sangsang.autoblog.domain.model.User;
 
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
+import com.sangsang.autoblog.domain.port.out.GithubOAuthPort;
 import com.sangsang.autoblog.domain.port.out.UserHistoryRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOAuthRepositoryPort;
 import com.sangsang.autoblog.domain.port.out.UserOriginRepositoryPort;
@@ -27,6 +28,7 @@ public class AuthService implements AuthUseCase, UserDetailsService{
 
     private final BCryptPasswordEncoder passwordEncoder;
 
+    private final GithubOAuthPort githubOAuthPort;
     private final UserHistoryRepositoryPort userRepositoryPort;
     private final UserOriginRepositoryPort userOriginRepositoryPort;
     private final UserOAuthRepositoryPort userOAuthRepositoryPort;
@@ -34,10 +36,12 @@ public class AuthService implements AuthUseCase, UserDetailsService{
     public AuthService(UserHistoryRepositoryPort userRepositoryPort,
                         UserOriginRepositoryPort userOriginRepositoryPort,
                         UserOAuthRepositoryPort userOAuthRepositoryPort,
+                        GithubOAuthPort githubOAuthPort,
                         BCryptPasswordEncoder passwordEncoder) {
             this.userRepositoryPort = userRepositoryPort;
             this.userOriginRepositoryPort = userOriginRepositoryPort;
             this.userOAuthRepositoryPort = userOAuthRepositoryPort;
+            this.githubOAuthPort = githubOAuthPort;
             this.passwordEncoder = passwordEncoder;
     }
 
@@ -74,5 +78,11 @@ public class AuthService implements AuthUseCase, UserDetailsService{
         }
 
         return null;
+    }
+
+    @Override
+    public void signinByGithub(String code) {
+        String accessToken = githubOAuthPort.getGithubAccessToken(code);
+        User user = githubOAuthPort.getGithubUserInfo(accessToken);
     }
 }

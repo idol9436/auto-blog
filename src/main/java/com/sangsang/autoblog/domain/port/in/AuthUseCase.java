@@ -5,4 +5,5 @@ import com.sangsang.autoblog.domain.model.User;
 
 public interface AuthUseCase {
     User signup(SignupCommand cmd);
+    void signinByGithub(String code);
 }

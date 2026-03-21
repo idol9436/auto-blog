@@ -39,10 +39,10 @@
 <script th:inline="javascript">
     function handleGithubOauth() {
         const clientId = '';
-        const redirectUri ='';
+        const callBackUrl = '';
         const scope = 'read:user user:email';
         const githubOauthUrl = `
-            https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+            https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${callBackUrl}&scope=${scope}`;
         window.location.href = githubOauthUrl;
     }
 </script>

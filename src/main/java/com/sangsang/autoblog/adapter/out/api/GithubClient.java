@@ -3,7 +3,6 @@ package com.sangsang.autoblog.adapter.out.api;
 import java.util.Base64;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
