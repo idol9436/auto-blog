@@ -45,4 +45,22 @@ public class UserOriginAdapter implements UserOriginRepositoryPort {
         }
         return optUser;
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByEmail'");
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        Optional<User> optUser;
+        try {
+            UserOriginEntity userEntity = userOriginRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            optUser = Optional.of(userEntity.toOriginUserDomain()); 
+        } catch (Exception e) {
+            optUser = null;
+        }
+        return optUser;
+    }
 }

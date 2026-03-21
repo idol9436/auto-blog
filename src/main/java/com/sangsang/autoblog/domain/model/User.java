@@ -4,6 +4,7 @@ import com.sangsang.autoblog.application.command.SignupCommand;
 
 public class User {
     
+    public final Long id;
     public final String username;
     public String password;
     public final String role;
@@ -15,18 +16,20 @@ public class User {
     public final boolean agreeToTerms;
 
     enum Role { ROLE_USER }
-    enum AuthProvider { GOOGLE, KAKAO }
+    enum AuthProvider { GOOGLE, KAKAO, GITHUB }
 
-    private User(String username,
+    private User(Long id,
+                 String username,
                  String password,
                  String role,
-                 String email, 
                  String provider,
                  String providerId,
+                 String email, 
                  String extraInfo, 
                  boolean rememberMe, 
                  boolean agreeToTerms) {
         
+        this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
@@ -39,17 +42,19 @@ public class User {
     }
 
     public static User restore(
+        Long id,
         String username,
         String password,
         String role,
-        String email, 
         String provider,
         String providerId,
+        String email, 
         String extraInfo, 
         boolean rememberMe, 
         boolean agreeToTerms
     ) {
         return new User(
+            id,
             username,
             password,
             role,
@@ -63,24 +68,26 @@ public class User {
     }
 
     public static User signupOriginFrom(SignupCommand cmd) {
-        return new User(cmd.username(),
+        return new User(cmd.id(),
+                        cmd.username(),
                         cmd.password(),
                         Role.ROLE_USER.name(),
-                        cmd.email(),
                         null,
                         null, 
+                        cmd.email(),
                         cmd.extraInfo(), 
                         false, 
                         cmd.agreeToTerms());
     }
 
     public static User signupOAuthFrom(SignupCommand cmd) {
-        return new User(null, 
+        return new User(cmd.id(),
+                        cmd.username(), 
                         null, 
                         Role.ROLE_USER.name(), 
-                        cmd.email(), 
-                        cmd.provider(), 
-                        cmd.providerId(), 
+                        AuthProvider.valueOf(cmd.provider()).name(), 
+                        cmd.providerId(),
+                        cmd.email(),
                         cmd.extraInfo(), 
                         false, 
                         cmd.agreeToTerms());

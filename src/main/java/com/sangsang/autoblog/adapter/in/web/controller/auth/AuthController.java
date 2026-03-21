@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.sangsang.autoblog.adapter.in.web.dto.SignupReqeustDTO;
 import com.sangsang.autoblog.domain.port.in.AuthUseCase;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,6 +38,12 @@ public class AuthController {
         authUseCase.signup(signupReqeustDTO.toCommand());
 
         return "redirect:signin";
+    }
+
+    @GetMapping("/signin/github")
+    public String getGithubRedirection(@RequestParam String code, HttpServletRequest request) {
+        authUseCase.signinByGithub(code, request);
+        return "home";
     }
     
 }
