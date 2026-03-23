@@ -78,8 +78,8 @@
         <form id="githubUploadForm">
             <div class="mb-3">
                 <label for="githubToken" class="form-label">GitHub Token (Personal Access Token)</label>
-                <input type="password" class="form-control" id="githubToken" name="token" required
-                       placeholder="ghp_xxxxxxxxxxxx">
+                <input type="text" class="form-control" id="githubToken" name="token" required
+                       placeholder="ghp_xxxxxxxxxxxx" th:value="${session.GITHUB_ACCESS_TOKEN != null ? session.GITHUB_ACCESS_TOKEN : ''}">
                 <div class="form-text">
                     <a href="https://github.com/settings/tokens" target="_blank">Generate token here</a>
                     (requires repo scope)
@@ -88,7 +88,7 @@
             <div class="mb-3">
                 <label for="githubOwner" class="form-label">Owner (GitHub Username)</label>
                 <input type="text" class="form-control" id="githubOwner" name="owner" required
-                       placeholder="your-username">
+                       placeholder="your-username" th:value="${#authentication.principal.username != null ? #authentication.principal.username : ''}">
             </div>
             <div class="mb-3">
                 <label for="githubRepo" class="form-label">Repository Name</label>

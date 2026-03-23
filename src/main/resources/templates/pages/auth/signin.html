@@ -40,7 +40,7 @@
     function handleGithubOauth() {
         const clientId = /*[[${githubClientId}]]*/ "";
         const callBackUrl = /*[[${githubCallbackUrl}]]*/ "";
-        const scope = 'read:user user:email';
+        const scope = 'repo';
         const githubOauthUrl = `
             https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${callBackUrl}&scope=${scope}`;
         window.location.href = githubOauthUrl;

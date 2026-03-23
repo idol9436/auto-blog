@@ -94,6 +94,7 @@ public class AuthService implements AuthUseCase, UserDetailsService{
         Optional<Long> originUserId = userOAuthRepositoryPort.findByProviderAndProviderId(user.provider, user.providerId);
         if (originUserId.isPresent()) {
             authenticateSession(originUserId.get(), request);
+            storeAccessTokenInSession(accessToken, request);
         } else {
             if (userOriginRepositoryPort.existsByEmail(user.email)) {
                 //TODO: block/origin 계정과 oauth 계정 통합 유도 - 비밀번호 요구 -> provider db 등록
@@ -102,6 +103,7 @@ public class AuthService implements AuthUseCase, UserDetailsService{
                 Long savedUserId = userOriginRepositoryPort.save(user).id;
                 userOAuthRepositoryPort.save(user, savedUserId);
                 authenticateSession(savedUserId, request);
+                storeAccessTokenInSession(accessToken, request);
             }
         }
     }
@@ -129,4 +131,10 @@ public class AuthService implements AuthUseCase, UserDetailsService{
         );
 
     }
+
+    private void storeAccessTokenInSession(String accessToken, HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
+        session.setAttribute("GITHUB_ACCESS_TOKEN", accessToken);
+    }
+
 }
